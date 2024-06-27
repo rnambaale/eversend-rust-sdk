@@ -2,10 +2,13 @@
 //!
 //! [Eversend Docs: Wallets Guide](https://eversend.readme.io/reference/get-wallets)
 
-use crate::eversend::Eversend;
 
 mod operations;
 mod types;
+
+pub use operations::*;
+
+use crate::Eversend;
 
 /// Wallets.
 ///

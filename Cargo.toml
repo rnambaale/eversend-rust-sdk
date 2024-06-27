@@ -1,5 +1,5 @@
 [package]
-name = "eversend-rust-sdk"
+name = "eversend_rust_sdk"
 description = "Eversend Rust SDK"
 version = "0.1.0"
 edition = "2021"

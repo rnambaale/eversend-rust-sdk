@@ -9,6 +9,26 @@ pub trait GetWallets {
     ///
     /// [Eversend Docs: List Wallets](https://eversend.readme.io/reference/get-wallets)
     ///
+    /// # Examples
+    /// ```
+    /// # use eversend_rust_sdk::wallets::*;
+    /// use eversend_rust_sdk::{ClientId,Eversend};
+    ///
+    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let eversend = Eversend::new(
+    ///         &ClientId::from("sk_example_123456789"),
+    ///         &String::from("sk_example_123456780")
+    ///     );
+    ///
+    ///     let wallets = eversend
+    ///         .wallets()
+    ///         .get_wallets()
+    ///         .await?;
+    ///
+    ///     Ok(())
+    /// # }
+    /// ```
+    ///
     async fn get_wallets(
         &self,
     ) -> Result<Vec<Wallet>, Box<dyn std::error::Error>>;
@@ -29,8 +49,7 @@ impl<'a> GetWallets for Wallets<'a> {
             .await?
             // .handle_unauthorized_or_generic_error()?
             .json::<Vec<Wallet>>()
-            .await?
-            ;
+            .await?;
 
         Ok(wallets)
     }

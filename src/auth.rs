@@ -1,6 +1,11 @@
-use crate::Eversend;
+//! A module for interacting with authentication within Eversend.
+//!
 
 mod operations;
+
+pub use operations::*;
+
+use crate::Eversend;
 
 /// Authentication.
 ///
