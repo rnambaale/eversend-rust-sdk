@@ -10,6 +10,25 @@ pub trait GenerateApiToken {
     ///
     /// [Eversend Docs: Get an API token](https://eversend.readme.io/reference/get-token)
     ///
+    /// # Examples
+    /// ```
+    /// # use eversend_rust_sdk::auth::*;
+    /// use eversend_rust_sdk::{ClientId,Eversend};
+    ///
+    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let eversend = Eversend::new(
+    ///         &ClientId::from("sk_example_123456789"),
+    ///         &String::from("sk_example_123456780")
+    ///     );
+    ///
+    ///     let api_token = eversend
+    ///         .auth()
+    ///         .generate_api_token()
+    ///         .await?;
+    ///     Ok(())
+    /// # }
+    /// ```
+    ///
     async fn generate_api_token(
         &self,
     ) -> Result<ApiToken, Box<dyn std::error::Error>>;

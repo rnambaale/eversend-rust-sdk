@@ -1,3 +1,5 @@
+//! Rust SDK for interacting with the [Eversend](https://eversend.co/) API.
+
 mod core;
 mod eversend;
 
