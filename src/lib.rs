@@ -1,5 +1,12 @@
 mod core;
+mod eversend;
+
+pub mod auth;
+pub mod wallets;
+
 pub use crate::core::*;
+pub use crate::eversend::*;
+
 // pub fn add(left: usize, right: usize) -> usize {
 //     left + right
 // }
