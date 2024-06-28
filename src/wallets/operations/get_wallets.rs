@@ -1,6 +1,5 @@
 use async_trait::async_trait;
-use crate::wallets::{types::Wallet, Wallets};
-
+use crate::{wallets::{types::Wallet, Wallets}, ApiResponseList};
 
 /// [Eversend Docs: List Wallets](https://eversend.readme.io/reference/get-wallets)
 #[async_trait]
@@ -31,14 +30,14 @@ pub trait GetWallets {
     ///
     async fn get_wallets(
         &self,
-    ) -> Result<Vec<Wallet>, Box<dyn std::error::Error>>;
+    ) -> Result<ApiResponseList<Wallet>, Box<dyn std::error::Error>>;
 }
 
 #[async_trait]
 impl<'a> GetWallets for Wallets<'a> {
     async fn get_wallets(
         &self,
-    ) -> Result<Vec<Wallet>, Box<dyn std::error::Error>> {
+    ) -> Result<ApiResponseList<Wallet>, Box<dyn std::error::Error>> {
         let url = format!("{}/wallets", self.eversend.base_url());
         let wallets = self
             .eversend
@@ -48,7 +47,7 @@ impl<'a> GetWallets for Wallets<'a> {
             .send()
             .await?
             // .handle_unauthorized_or_generic_error()?
-            .json::<Vec<Wallet>>()
+            .json::<ApiResponseList<Wallet>>()
             .await?;
 
         Ok(wallets)
