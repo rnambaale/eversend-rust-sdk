@@ -53,3 +53,68 @@ impl<'a> GetWallets for Wallets<'a> {
         Ok(wallets)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{core::ClientId, eversend::Eversend, ApiToken};
+
+    use super::*;
+    use mockito::{self, mock};
+    use serde_json::json;
+    use tokio;
+
+    #[tokio::test]
+    async fn it_calls_the_get_wallets_endpoint() {
+        let eversend = Eversend::builder(
+            &ClientId::from("sk_example_123456789"),
+            &String::from("sk_example_123456780")
+        )
+            .set_base_url(&mockito::server_url())
+            .set_api_token(&ApiToken::from("some_test_token"))
+            .build();
+
+        let _mock = mock("GET", "/wallets")
+            .with_status(200)
+            .with_body(
+                json!({
+                    "code": 200,
+                    "data": [
+                        {
+                            "currency": "UGX",
+                            "currencyType": "some type",
+                            "amount": 1000,
+                            "enabled": true,
+                            "name": "Ug Wallet",
+                            "icon": "ug-flag",
+                            "amountInBaseCurrency": 1000,
+                            "isMain": true,
+                        },
+                        {
+                            "currency": "NGN",
+                            "currencyType": "some type",
+                            "amount": 800,
+                            "enabled": true,
+                            "name": "Ng Wallet",
+                            "icon": "ng-flag",
+                            "amountInBaseCurrency": 800,
+                            "isMain": false,
+                        }
+                    ]
+                }).to_string(),
+            )
+            .create();
+
+        let wallets_response = eversend
+            .wallets()
+            .get_wallets()
+            .await
+            .unwrap();
+
+        assert_eq!(wallets_response.data[0].currency, "UGX");
+        assert_eq!(wallets_response.data[0].amount_in_base_currency, 1000);
+
+        assert_eq!(wallets_response.data[1].currency, "NGN");
+        assert_eq!(wallets_response.data[1].amount_in_base_currency, 800);
+
+    }
+}

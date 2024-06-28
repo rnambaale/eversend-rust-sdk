@@ -88,7 +88,7 @@ impl<'a> EversendBuilder<'a> {
             .unwrap();
 
         Eversend {
-            api_token: None,
+            api_token: self.api_token,
             base_url: self.base_url,
             client_secret: self.client_secret.to_owned(),
             client_id: self.client_id.to_owned(),
