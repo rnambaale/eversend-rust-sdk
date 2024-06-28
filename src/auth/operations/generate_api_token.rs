@@ -52,13 +52,6 @@ impl<'a> GenerateApiToken for Auth<'a> {
             .json::<ApiTokenResponse>()
             .await?;
 
-        // if response.status().is_success() {
-        //     let body = response.json::<ApiToken>()?;
-        //     Ok(body)
-        // } else {
-        //     Err(format!("Request failed with status: {}", response.status()).into())
-        // }
-
         Ok(response.token)
     }
 }
@@ -70,7 +63,6 @@ struct ApiTokenResponse {
 }
 
 #[cfg(test)]
-#[allow(dead_code)]
 mod tests {
     use crate::{core::ClientId, eversend::Eversend};
 
