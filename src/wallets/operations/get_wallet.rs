@@ -25,7 +25,7 @@ pub trait GetWallet {
     ///         &String::from("sk_example_123456780")
     ///     );
     ///
-    ///     let wallets = eversend
+    ///     let wallet = eversend
     ///         .wallets()
     ///         .get_wallet(&WalletId::from("UGX"))
     ///         .await?;
