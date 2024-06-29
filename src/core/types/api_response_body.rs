@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ApiResponseList<T> {
-    pub data: Vec<T>,
-    pub code: u32,
+pub struct ApiResponseBody<T> {
+    pub code: u16,
+    pub data: T,
 }

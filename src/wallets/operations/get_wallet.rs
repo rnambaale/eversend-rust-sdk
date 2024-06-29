@@ -1,13 +1,7 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
-use crate::wallets::{types::{Wallet, WalletId}, Wallets};
-
-#[derive(Serialize, Deserialize)]
-struct WalletResponse {
-    code: u16,
-    data: WalletResponseData,
-}
+use crate::{wallets::{types::{Wallet, WalletId}, Wallets}, ApiResponseBody};
 
 #[derive(Serialize, Deserialize)]
 struct WalletResponseData {
@@ -61,7 +55,7 @@ impl<'a> GetWallet for Wallets<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<WalletResponse>()
+            .json::<ApiResponseBody<WalletResponseData>>()
             .await?;
 
         Ok(wallet.data.wallet)
