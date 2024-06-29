@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use crate::{wallets::{types::Wallet, Wallets}, ApiResponseBody};
+use crate::{wallets::{types::Wallet, Wallets}, ApiResponseBody, ResponseExtension};
 
 /// [Eversend Docs: List Wallets](https://eversend.readme.io/reference/get-wallets)
 #[async_trait]
@@ -46,6 +46,7 @@ impl<'a> GetWallets for Wallets<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<Vec<Wallet>>>()
             .await?;
 

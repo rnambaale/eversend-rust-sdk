@@ -6,7 +6,9 @@ use std::fmt::{Display, Formatter};
 pub enum EversendError {
     /// API token was not found on the eversend client.
     ApiTokenMissing,
-    OperationError
+    OperationError,
+    Unauthorized,
+    RequestError,
 }
 
 /// Error struct that holds the [`EversendError`] and message of the reported failure.
