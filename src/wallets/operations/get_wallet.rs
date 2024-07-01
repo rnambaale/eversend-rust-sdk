@@ -8,6 +8,7 @@ struct WalletResponseData {
     wallet: Wallet
 }
 
+/// [Eversend Docs: Get a Wallet](https://eversend.readme.io/reference/get-wallet)
 #[async_trait]
 pub trait GetWallet {
     /// Retrieves a [`Wallet`] by its ID.
