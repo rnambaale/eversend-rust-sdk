@@ -118,7 +118,7 @@ mod tests {
             .wallets()
             .activate_wallet(
                 &ActivateWalletParams{
-                    wallet: &WalletId::from("USD")
+                    wallet: &WalletId::from("UGX")
                 }
             )
             .await

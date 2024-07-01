@@ -1,17 +1,31 @@
 use async_trait::async_trait;
-use crate::{wallets::{types::Wallet, Wallets}, ApiResponseBody};
+use serde::{Deserialize, Serialize};
 
-/// [Eversend Docs: List Wallets](https://eversend.readme.io/reference/get-wallets)
+use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody};
+
+/// The parameters for [`DeactivateWallet`].
+#[derive(Debug, Serialize)]
+pub struct DeActivateWalletParams<'a> {
+    /// The ID of the wallet.
+    pub wallet: &'a WalletId
+}
+
+#[derive(Serialize, Deserialize)]
+struct WalletResponseData {
+    wallet: Wallet
+}
+
 #[async_trait]
-pub trait GetWallets {
-    /// Retrieves a list of [`Wallet`]s.
+pub trait DeactivateWallet {
+    /// Deactivates an [`Wallet`].
     ///
-    /// [Eversend Docs: List Wallets](https://eversend.readme.io/reference/get-wallets)
+    /// [Eversend Docs: Deactivate a Wallet](https://eversend.readme.io/reference/deactivate-a-wallet)
     ///
     /// # Examples
     /// ```
-    /// # use eversend_rust_sdk::wallets::*;
+    /// use eversend_rust_sdk::wallets::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
+    /// use eversend_rust_sdk::wallets::WalletId;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     ///     let eversend = Eversend::new(
@@ -19,37 +33,44 @@ pub trait GetWallets {
     ///         &String::from("sk_example_123456780")
     ///     );
     ///
-    ///     let wallets = eversend
+    ///     let wallet = eversend
     ///         .wallets()
-    ///         .get_wallets()
+    ///         .deactivate_wallet(&DeActivateWalletParams{
+    ///             wallet: &WalletId::from("USD")
+    ///         })
     ///         .await?;
     ///
     ///     Ok(())
+    ///
     /// # }
     /// ```
     ///
-    async fn get_wallets(
+    async fn deactivate_wallet(
         &self,
-    ) -> Result<ApiResponseBody<Vec<Wallet>>, Box<dyn std::error::Error>>;
+        params: &DeActivateWalletParams<'_>
+    ) -> Result<Wallet, Box<dyn std::error::Error>>;
 }
 
 #[async_trait]
-impl<'a> GetWallets for Wallets<'a> {
-    async fn get_wallets(
+impl<'a> DeactivateWallet for Wallets<'a> {
+    async fn deactivate_wallet(
         &self,
-    ) -> Result<ApiResponseBody<Vec<Wallet>>, Box<dyn std::error::Error>> {
-        let url = format!("{}/wallets", self.eversend.base_url());
-        let wallets = self
+        params: &DeActivateWalletParams<'_>
+    ) -> Result<Wallet, Box<dyn std::error::Error>> {
+        let url = format!("{}/wallets/deactivate", self.eversend.base_url());
+
+        let wallet = self
             .eversend
             .client()
-            .get(url)
+            .post(url)
+            .json(&params)
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<ApiResponseBody<Vec<Wallet>>>()
+            .json::<ApiResponseBody<WalletResponseData>>()
             .await?;
 
-        Ok(wallets)
+        Ok(wallet.data.wallet)
     }
 }
 
@@ -63,7 +84,7 @@ mod tests {
     use tokio;
 
     #[tokio::test]
-    async fn it_calls_the_get_wallets_endpoint() {
+    async fn it_calls_the_activate_wallet_endpoint() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_example_123456789"),
             &String::from("sk_example_123456780")
@@ -72,13 +93,13 @@ mod tests {
             .set_api_token(&ApiToken::from("some_test_token"))
             .build();
 
-        let _mock = mock("GET", "/wallets")
+        let _mock = mock("POST", "/wallets/deactivate")
             .with_status(200)
             .with_body(
                 json!({
                     "code": 200,
-                    "data": [
-                        {
+                    "data": {
+                        "wallet" : {
                             "currency": "UGX",
                             "currencyType": "some type",
                             "amount": 1000,
@@ -87,33 +108,24 @@ mod tests {
                             "icon": "ug-flag",
                             "amountInBaseCurrency": 1000,
                             "isMain": true,
-                        },
-                        {
-                            "currency": "NGN",
-                            "currencyType": "some type",
-                            "amount": 800,
-                            "enabled": true,
-                            "name": "Ng Wallet",
-                            "icon": "ng-flag",
-                            "amountInBaseCurrency": 800,
-                            "isMain": false,
                         }
-                    ]
+                    },
+                    "success": true
                 }).to_string(),
             )
             .create();
 
-        let wallets_response = eversend
+        let wallet = eversend
             .wallets()
-            .get_wallets()
+            .deactivate_wallet(
+                &DeActivateWalletParams{
+                    wallet: &WalletId::from("UGX")
+                }
+            )
             .await
             .unwrap();
 
-        assert_eq!(wallets_response.data[0].currency, "UGX");
-        assert_eq!(wallets_response.data[0].amount_in_base_currency, 1000);
-
-        assert_eq!(wallets_response.data[1].currency, "NGN");
-        assert_eq!(wallets_response.data[1].amount_in_base_currency, 800);
-
+        assert_eq!(wallet.currency, WalletId::from("UGX").to_string());
+        assert_eq!(wallet.currency_type, "some type");
     }
 }
