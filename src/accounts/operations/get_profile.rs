@@ -2,6 +2,7 @@ use async_trait::async_trait;
 
 use crate::{accounts::{types::Account, Accounts}, ApiResponseBody};
 
+/// [Eversend Docs: Get Account Profile](https://eversend.readme.io/reference/get-account-profile)
 #[async_trait]
 pub trait GetProfile {
     /// Gets Account Profile.

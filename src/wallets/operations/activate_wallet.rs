@@ -14,6 +14,7 @@ struct WalletResponseData {
     wallet: Wallet
 }
 
+/// [Eversend Docs: Activate a Wallet](https://eversend.readme.io/reference/activate-a-wallet)
 #[async_trait]
 pub trait ActivateWallet {
     /// Activates an [`Wallet`].

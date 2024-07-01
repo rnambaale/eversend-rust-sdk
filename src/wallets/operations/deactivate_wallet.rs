@@ -15,6 +15,7 @@ struct WalletResponseData {
     wallet: Wallet
 }
 
+/// [Eversend Docs: Deactivate a Wallet](https://eversend.readme.io/reference/deactivate-a-wallet)
 #[async_trait]
 pub trait DeactivateWallet {
     /// Deactivates an [`Wallet`].

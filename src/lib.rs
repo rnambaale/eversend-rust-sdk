@@ -1,5 +1,7 @@
 //! Rust SDK for interacting with the [Eversend](https://eversend.co/) API.
 
+// #![warn(missing_docs)]
+
 mod core;
 mod eversend;
 
