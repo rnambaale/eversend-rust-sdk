@@ -13,5 +13,8 @@ pub struct Quotation {
     /// Destination currency from Get Wallets
     pub to: WalletId,
 
+    /// Quotation token
+    pub token: String,
+
     // TODO: Get actual quotation response attributes
 }
