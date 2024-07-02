@@ -5,7 +5,7 @@ use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody};
 /// The parameters for [`ActivateWallet`].
 #[derive(Debug, Serialize)]
 pub struct ActivateWalletParams<'a> {
-    /// The ID of the wallet.
+    /// The ID of the wallet e.g. UGX, NGN, etc
     pub wallet: &'a WalletId
 }
 
