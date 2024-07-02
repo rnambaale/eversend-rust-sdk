@@ -17,7 +17,7 @@ pub struct CreateQuotationParams<'a> {
 
 #[async_trait]
 pub trait CreateQuotation {
-    /// Creates a [`Quaotation`].
+    /// Creates a [`Quotation`].
     ///
     /// [Eversend Docs: Create a Quotation](https://eversend.readme.io/reference/activate-a-wallet)
     ///
@@ -105,6 +105,7 @@ mod tests {
                         "from": "UGX",
                         "id": 1,
                         "to": "USD",
+                        "token": "some-quotation-token"
                     },
                     "success": true
                 }).to_string(),
@@ -126,5 +127,6 @@ mod tests {
         assert_eq!(quotation.amount, 1000);
         assert_eq!(quotation.from, WalletId::from("UGX"));
         assert_eq!(quotation.to, WalletId::from("USD"));
+        assert_eq!(quotation.token, String::from("some-quotation-token"));
     }
 }
