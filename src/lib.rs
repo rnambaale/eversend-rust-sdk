@@ -7,6 +7,7 @@ mod eversend;
 
 pub mod accounts;
 pub mod auth;
+pub mod beneficiaries;
 pub mod exchange;
 pub mod wallets;
 
