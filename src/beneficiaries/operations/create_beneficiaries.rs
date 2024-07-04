@@ -55,7 +55,6 @@ pub trait CreateBeneficiaries {
     /// ```
     /// use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
-    /// use eversend_rust_sdk::wallets::WalletId;
     ///
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     ///     let eversend = Eversend::new(
@@ -93,7 +92,6 @@ pub trait CreateBeneficiaries {
     ///
     /// # }
     /// ```
-    ///
     async fn create_beneficiaries(
         &self,
         params: Vec<&CreateBeneficaryParamItem>
