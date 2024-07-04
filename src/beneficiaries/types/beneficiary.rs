@@ -22,19 +22,19 @@ pub struct Beneficiary {
 
     /// The bank Name.
     #[serde(rename = "bankName")]
-    pub bank_name: String,
+    pub bank_name: Option<String>,
 
     /// The bank Code.
     #[serde(rename = "bankCode")]
-    pub bank_code: String,
+    pub bank_code: Option<String>,
 
     /// The bank Account Name.
     #[serde(rename = "bankAccountName")]
-    pub bank_account_name: String,
+    pub bank_account_name: Option<String>,
 
     /// The bank Account Number.
     #[serde(rename = "bankAccountNumber")]
-    pub bank_account_number: String,
+    pub bank_account_number: Option<String>,
 
     /// The country.
     pub country: String,
