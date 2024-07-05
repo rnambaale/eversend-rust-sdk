@@ -16,7 +16,7 @@ pub struct Beneficiary {
     /// The email.
     pub email: String,
 
-    /// The phone Number.
+    /// Phone number in international format.
     #[serde(rename = "phoneNumber")]
     pub phone_number: String,
 
@@ -24,15 +24,15 @@ pub struct Beneficiary {
     #[serde(rename = "bankName")]
     pub bank_name: Option<String>,
 
-    /// The bank Code.
+    /// Bank code from `Get Delivery Banks`.
     #[serde(rename = "bankCode")]
     pub bank_code: Option<String>,
 
-    /// The bank Account Name.
+    ///  Account holder name with bank.
     #[serde(rename = "bankAccountName")]
     pub bank_account_name: Option<String>,
 
-    /// The bank Account Number.
+    /// Account number from bank.
     #[serde(rename = "bankAccountNumber")]
     pub bank_account_number: Option<String>,
 

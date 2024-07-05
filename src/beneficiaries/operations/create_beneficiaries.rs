@@ -16,7 +16,7 @@ pub struct CreateBeneficaryParamItem {
     /// The country.
     pub country: String,
 
-    /// The phone Number.
+    /// Phone number in international format.
     #[serde(rename = "phoneNumber")]
     pub phone_number: String,
 
@@ -28,11 +28,11 @@ pub struct CreateBeneficaryParamItem {
     #[serde(rename = "isMomo")]
     pub is_momo: bool,
 
-    /// The bank Account Name.
+    /// Account holder name with bank.
     #[serde(rename = "bankAccountName")]
     pub bank_account_name: Option<String>,
 
-    /// The bank Account Number.
+    /// Account number from bank.
     #[serde(rename = "bankAccountNumber")]
     pub bank_account_number: Option<String>,
 
