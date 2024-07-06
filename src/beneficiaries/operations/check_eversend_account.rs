@@ -78,7 +78,7 @@ impl<'a> CheckEversendAccount for Beneficiaries<'a> {
             .json::<ApiResponseBody<CheckEversendAccountStatus>>()
             .await?;
 
-        Ok(response.data.account_exists)
+        Ok(response.data.unwrap().account_exists)
     }
 }
 

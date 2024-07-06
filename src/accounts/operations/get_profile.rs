@@ -47,8 +47,24 @@ impl<'a> GetProfile for Accounts<'a> {
             .await?
             .json::<ApiResponseBody<Account>>()
             .await?;
+        // let account = account_response.data?;
 
-        Ok(account_response.data)
+
+        // Ok(account)
+
+        // Extract and handle the data field
+        // match account_response.data {
+        //     Some(account) => return Ok(account),
+        //     None => Err(
+        //         ClientError::new(
+        //             EversendError::OperationError,
+        //             String::from("Could not extract data form API response.")
+        //         )
+        //     ),
+        // }
+
+        // Just expose the data option, let the consumer deal with unwarpping it?
+        Ok(account_response.data.unwrap())
     }
 }
 

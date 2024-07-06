@@ -1,13 +1,6 @@
 use async_trait::async_trait;
-use serde::Deserialize;
 
-use crate::beneficiaries::Beneficiaries;
-
-#[derive(Deserialize)]
-pub struct DeleteBeneficiaryApiResponse {
-    pub code: u16,
-    pub success: bool
-}
+use crate::{beneficiaries::Beneficiaries, ApiResponseBody};
 
 /// [Eversend Docs: Delete A Beneficiary](https://eversend.readme.io/reference/delete-a-beneficiary)
 #[async_trait]
@@ -59,7 +52,7 @@ impl<'a> DeleteBeneficiary for Beneficiaries<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<DeleteBeneficiaryApiResponse>()
+            .json::<ApiResponseBody<()>>()
             .await?;
 
         Ok(())

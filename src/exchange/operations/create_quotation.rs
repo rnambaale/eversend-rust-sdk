@@ -72,7 +72,7 @@ impl<'a> CreateQuotation for Exchange<'a> {
             .json::<ApiResponseBody<Quotation>>()
             .await?;
 
-        Ok(response.data)
+        Ok(response.data.unwrap())
     }
 }
 

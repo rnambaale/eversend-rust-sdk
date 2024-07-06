@@ -98,7 +98,8 @@ mod tests {
                             "amountInBaseCurrency": 800,
                             "isMain": false,
                         }
-                    ]
+                    ],
+                    "success": true,
                 }).to_string(),
             )
             .create();
@@ -108,12 +109,13 @@ mod tests {
             .get_wallets()
             .await
             .unwrap();
+        let wallets = wallets_response.data.unwrap();
 
-        assert_eq!(wallets_response.data[0].currency, "UGX");
-        assert_eq!(wallets_response.data[0].amount_in_base_currency, 1000);
+        assert_eq!(wallets[0].currency, "UGX");
+        assert_eq!(wallets[0].amount_in_base_currency, 1000);
 
-        assert_eq!(wallets_response.data[1].currency, "NGN");
-        assert_eq!(wallets_response.data[1].amount_in_base_currency, 800);
+        assert_eq!(wallets[1].currency, "NGN");
+        assert_eq!(wallets[1].amount_in_base_currency, 800);
 
     }
 }
