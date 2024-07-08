@@ -63,7 +63,7 @@ impl<'a> CreateExchange for Exchange<'a> {
             .await?
             .json::<ApiResponseBody<ExchangeResult>>()
             .await?;
-        Ok(response.data)
+        Ok(response.data.unwrap())
     }
 }
 

@@ -76,7 +76,7 @@ impl<'a> GetBankDetails for Beneficiaries<'a> {
             .json::<ApiResponseBody<BankDetails>>()
             .await?;
 
-        Ok(response.data)
+        Ok(response.data.unwrap())
     }
 }
 

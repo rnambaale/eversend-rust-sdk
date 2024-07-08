@@ -59,7 +59,7 @@ impl<'a> GetBeneficiary for Beneficiaries<'a> {
             .json::<ApiResponseBody<GetBeneficaryApiResponse>>()
             .await?;
 
-        Ok(response.data.beneficiary)
+        Ok(response.data.unwrap().beneficiary)
     }
 }
 

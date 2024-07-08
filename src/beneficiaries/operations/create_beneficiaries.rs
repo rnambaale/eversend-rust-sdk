@@ -1,7 +1,7 @@
 use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use crate::beneficiaries::Beneficiaries;
+use crate::{beneficiaries::Beneficiaries, ApiResponseBody};
 
 #[derive(Serialize)]
 pub struct CreateBeneficaryParamItem {
@@ -36,12 +36,6 @@ pub struct CreateBeneficaryParamItem {
     #[serde(rename = "bankAccountNumber")]
     pub bank_account_number: Option<String>,
 
-}
-
-#[derive(Deserialize)]
-pub struct CreateBeneficiariesApiResponse {
-    pub code: u16,
-    pub success: bool
 }
 
 /// [Eversend Docs: Create Beneficiaries](https://eversend.readme.io/reference/create-beneficiaries)
@@ -114,7 +108,7 @@ impl<'a> CreateBeneficiaries for Beneficiaries<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<CreateBeneficiariesApiResponse>()
+            .json::<ApiResponseBody<()>>()
             .await?;
 
         Ok(())

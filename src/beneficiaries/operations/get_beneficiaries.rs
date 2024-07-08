@@ -87,7 +87,7 @@ impl<'a> GetBeneficiaries for Beneficiaries<'a> {
             .json::<ApiResponseBody<BeneficiariesApiResponse>>()
             .await?;
 
-        Ok(result.data.beneficiaries)
+        Ok(result.data.unwrap().beneficiaries)
     }
 }
 
@@ -150,7 +150,8 @@ mod tests {
                                 "isMomo": true,
                             },
                         ]
-                    }
+                    },
+                    "success": true,
                 }).to_string(),
             )
             .create();

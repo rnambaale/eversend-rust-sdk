@@ -71,7 +71,7 @@ impl<'a> DeactivateWallet for Wallets<'a> {
             .json::<ApiResponseBody<WalletResponseData>>()
             .await?;
 
-        Ok(wallet.data.wallet)
+        Ok(wallet.data.unwrap().wallet)
     }
 }
 
