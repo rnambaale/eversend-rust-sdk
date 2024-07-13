@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Quotation {
 
     pub amount: u32,
@@ -37,4 +37,41 @@ pub struct Quotation {
 
     #[serde(rename = "type")]
     pub transaction_type: String,
+
+    pub merchant: Option<Merchant>
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Merchant {
+    pub result: String,
+
+    #[serde(rename = "merchantExists")]
+    pub merchant_exists: bool,
+
+    pub country: String,
+
+    #[serde(rename = "defaultWallet")]
+    pub default_wallet: String,
+
+    #[serde(rename = "isMerchant")]
+    pub is_merchant: bool,
+
+    #[serde(rename = "firstName")]
+    pub first_name: String,
+
+    #[serde(rename = "lastName")]
+    pub last_name: String,
+
+    pub email: String,
+
+    #[serde(rename = "phoneNumber")]
+    pub phone_number: PhoneNumber,
+
+    pub tag: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct PhoneNumber {
+    pub prefix: String,
+    pub number: String,
 }
