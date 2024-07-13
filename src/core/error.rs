@@ -1,33 +1,23 @@
-use std::error::Error;
-use std::fmt::{Display, Formatter};
+use thiserror::Error;
 
-/// Error kind that represents failures reported by the [`crate::Client`].
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub enum EversendError {
+/// An Eversend SDK error.
+#[derive(Debug, Error)]
+pub enum EversendError<E> {
     /// API token was not found on the eversend client.
+    #[error("API key could not be found")]
     ApiTokenMissing,
-    OperationError
+
+    /// An unauthorized response was received from the Eversend API.
+    #[error("unauthorized")]
+    Unauthorized,
+
+    #[error("operational error")]
+    Operation(E),
+
+    /// An unhandled error occurred with the API request.
+    #[error("request error")]
+    RequestError(#[from] reqwest::Error),
 }
 
-/// Error struct that holds the [`EversendError`] and message of the reported failure.
-#[derive(Debug, PartialEq)]
-pub struct ClientError {
-    /// Error kind that represents failures reported by the [`crate::Client`].
-    pub kind: EversendError,
-    /// The text representation of the failure.
-    pub message: String,
-}
-
-impl ClientError {
-    pub(crate) fn new(kind: EversendError, message: String) -> Self {
-        Self { message, kind }
-    }
-}
-
-impl Display for ClientError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.message.as_str())
-    }
-}
-
-impl Error for ClientError {}
+/// A Eversend SDK result.
+pub type EversendResult<T, E> = Result<T, EversendError<E>>;

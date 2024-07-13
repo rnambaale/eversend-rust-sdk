@@ -1,13 +1,24 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody};
+use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody, EversendError, EversendResult};
 
 /// The parameters for [`DeactivateWallet`].
 #[derive(Debug, Serialize)]
 pub struct DeActivateWalletParams<'a> {
     /// The ID of the wallet e.g. UGX, NGN, etc
     pub wallet: &'a WalletId
+}
+
+/// An error returned from [`CreateOrganization`].
+#[derive(Debug, Error)]
+pub enum DeactivateWalletError {}
+
+impl From<DeactivateWalletError> for EversendError<DeactivateWalletError> {
+    fn from(err: DeactivateWalletError) -> Self {
+        Self::Operation(err)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -24,11 +35,12 @@ pub trait DeactivateWallet {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::wallets::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::wallets::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     /// use eversend_rust_sdk::wallets::WalletId;
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), DeactivateWalletError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -49,7 +61,7 @@ pub trait DeactivateWallet {
     async fn deactivate_wallet(
         &self,
         params: &DeActivateWalletParams<'_>
-    ) -> Result<Wallet, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Wallet, DeactivateWalletError>;
 }
 
 #[async_trait]
@@ -57,7 +69,7 @@ impl<'a> DeactivateWallet for Wallets<'a> {
     async fn deactivate_wallet(
         &self,
         params: &DeActivateWalletParams<'_>
-    ) -> Result<Wallet, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Wallet, DeactivateWalletError> {
         let url = format!("{}/wallets/deactivate", self.eversend.base_url());
 
         let wallet = self

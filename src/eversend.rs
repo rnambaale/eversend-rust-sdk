@@ -1,4 +1,4 @@
-use crate::{accounts::Accounts, auth::Auth, beneficiaries::Beneficiaries, core::{ApiToken, ClientError, ClientId, EversendError, BASE_URL}, exchange::Exchange, payouts::Payouts, wallets::Wallets};
+use crate::{accounts::Accounts, auth::Auth, beneficiaries::Beneficiaries, core::{ApiToken, ClientId, EversendError, BASE_URL}, exchange::Exchange, payouts::Payouts, wallets::Wallets};
 
 /// The Eversend client.
 pub struct Eversend {
@@ -39,15 +39,12 @@ impl Eversend {
         &self.client
     }
 
-    pub fn api_token(&self) -> Result<&ApiToken, ClientError> {
+    pub fn api_token(&self) -> Result<&ApiToken, EversendError<()>> {
         if let Some(token) = &self.api_token {
             return Ok(token);
         }
 
-        Err(ClientError::new(
-            EversendError::ApiTokenMissing,
-            "API token is not set".to_owned(),
-        ))
+        Err(EversendError::ApiTokenMissing)
     }
 
     /// Returns an [`Auth`] instance.
