@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{payouts::{Payouts, Quotation}, ApiResponseBody};
+use crate::{payouts::{Payouts, Quotation}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct CreateEversendPayoutBodyParams {
@@ -29,6 +30,16 @@ pub struct CreateEversendPayoutBodyParams {
     pub tag: String,
 }
 
+/// An error returned from [`CreateEversendPayoutQuotation`].
+#[derive(Debug, Error)]
+pub enum CreateEversendPayoutQuotationError {}
+
+impl From<CreateEversendPayoutQuotationError> for EversendError<CreateEversendPayoutQuotationError> {
+    fn from(err: CreateEversendPayoutQuotationError) -> Self {
+        Self::Operation(err)
+    }
+}
+
 #[derive(Deserialize)]
 pub struct CreateEversendPayoutResponse {
     pub quotation: Quotation,
@@ -44,10 +55,11 @@ pub trait CreateEversendPayoutQuotation {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::payouts::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::payouts::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), CreateEversendPayoutQuotationError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -75,7 +87,7 @@ pub trait CreateEversendPayoutQuotation {
     async fn create_eversend_payout_quotation(
         &self,
         params: &CreateEversendPayoutBodyParams
-    ) -> Result<CreateEversendPayoutResponse, Box<dyn std::error::Error>>;
+    ) -> EversendResult<CreateEversendPayoutResponse, CreateEversendPayoutQuotationError>;
 }
 
 #[async_trait]
@@ -83,7 +95,7 @@ impl<'a> CreateEversendPayoutQuotation for Payouts<'a> {
     async fn create_eversend_payout_quotation(
         &self,
         params: &CreateEversendPayoutBodyParams
-    ) -> Result<CreateEversendPayoutResponse, Box<dyn std::error::Error>> {
+    ) -> EversendResult<CreateEversendPayoutResponse, CreateEversendPayoutQuotationError> {
         let url = format!("{}/payouts/quotation", self.eversend.base_url());
 
         let result = self

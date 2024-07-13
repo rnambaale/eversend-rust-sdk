@@ -1,12 +1,23 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody};
+use thiserror::Error;
+use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody, EversendError, EversendResult};
 
 /// The parameters for [`ActivateWallet`].
 #[derive(Debug, Serialize)]
 pub struct ActivateWalletParams<'a> {
     /// The ID of the wallet e.g. UGX, NGN, etc
     pub wallet: &'a WalletId
+}
+
+/// An error returned from [`ActivateWallet`].
+#[derive(Debug, Error)]
+pub enum ActivateWalletError {}
+
+impl From<ActivateWalletError> for EversendError<ActivateWalletError> {
+    fn from(err: ActivateWalletError) -> Self {
+        Self::Operation(err)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -23,11 +34,12 @@ pub trait ActivateWallet {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::wallets::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::wallets::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     /// use eversend_rust_sdk::wallets::WalletId;
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), ActivateWalletError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -48,7 +60,7 @@ pub trait ActivateWallet {
     async fn activate_wallet(
         &self,
         params: &ActivateWalletParams<'_>
-    ) -> Result<Wallet, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Wallet, ActivateWalletError>;
 }
 
 #[async_trait]
@@ -56,7 +68,7 @@ impl<'a> ActivateWallet for Wallets<'a> {
     async fn activate_wallet(
         &self,
         params: &ActivateWalletParams<'_>
-    ) -> Result<Wallet, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Wallet, ActivateWalletError> {
         let url = format!("{}/wallets/activate", self.eversend.base_url());
 
         let wallet = self

@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::beneficiaries::Beneficiaries;
+use crate::{beneficiaries::Beneficiaries, EversendError, EversendResult};
 
 #[derive(Deserialize, Serialize)]
 pub struct EditBeneficiaryParams {
@@ -34,6 +35,16 @@ pub struct EditBeneficiaryParams {
     pub bank_account_number: Option<String>,
 }
 
+/// An error returned from [`EditBeneficiary`].
+#[derive(Debug, Error)]
+pub enum EditBeneficiaryError {}
+
+impl From<EditBeneficiaryError> for EversendError<EditBeneficiaryError> {
+    fn from(err: EditBeneficiaryError) -> Self {
+        Self::Operation(err)
+    }
+}
+
 /// [Eversend Docs: Edit A Beneficiary](https://eversend.readme.io/reference/edit-a-beneficiary)
 #[async_trait]
 pub trait EditBeneficiary {
@@ -43,10 +54,11 @@ pub trait EditBeneficiary {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::beneficiaries::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), EditBeneficiaryError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -76,7 +88,7 @@ pub trait EditBeneficiary {
         &self,
         beneficiary_id: u32,
         params: &EditBeneficiaryParams
-    ) -> Result<(), Box<dyn std::error::Error>>;
+    ) -> EversendResult<(), EditBeneficiaryError>;
 }
 
 #[derive(Deserialize)]
@@ -91,7 +103,7 @@ impl<'a> EditBeneficiary for Beneficiaries<'a> {
         &self,
         beneficiary_id: u32,
         params: &EditBeneficiaryParams
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> EversendResult<(), EditBeneficiaryError> {
         let url = format!("{}/beneficiaries/{}", self.eversend.base_url(), beneficiary_id);
 
         let _response = self

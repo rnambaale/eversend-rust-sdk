@@ -1,6 +1,17 @@
 use async_trait::async_trait;
+use thiserror::Error;
 
-use crate::{payouts::{Bank, Payouts}, ApiResponseBody};
+use crate::{payouts::{Bank, Payouts}, ApiResponseBody, EversendError, EversendResult};
+
+/// An error returned from [`GetDeliveryBanks`].
+#[derive(Debug, Error)]
+pub enum GetDeliveryBanksError {}
+
+impl From<GetDeliveryBanksError> for EversendError<GetDeliveryBanksError> {
+    fn from(err: GetDeliveryBanksError) -> Self {
+        Self::Operation(err)
+    }
+}
 
 /// [Eversend Docs: Get Delivery Banks](https://eversend.readme.io/reference/get-delivery-banks)
 #[async_trait]
@@ -11,10 +22,11 @@ pub trait GetDeliveryBanks {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::payouts::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::payouts::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GetDeliveryBanksError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -32,7 +44,7 @@ pub trait GetDeliveryBanks {
     async fn get_delivery_banks(
         &self,
         country: String
-    ) -> Result<Vec<Bank>, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Vec<Bank>, GetDeliveryBanksError>;
 }
 
 #[async_trait]
@@ -40,7 +52,7 @@ impl<'a> GetDeliveryBanks for Payouts<'a> {
     async fn get_delivery_banks(
         &self,
         country: String
-    ) -> Result<Vec<Bank>, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Vec<Bank>, GetDeliveryBanksError> {
         let url = format!("{}/payouts/banks/{}", self.eversend.base_url(), country);
 
         let result = self

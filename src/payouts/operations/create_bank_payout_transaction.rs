@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{payouts::{Payouts, Transaction}, ApiResponseBody};
+use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct CreateBankPayoutTransactionBodyParams {
@@ -44,6 +45,16 @@ pub struct CreateBankPayoutTransactionBodyParams {
     pub transaction_ref: String,
 }
 
+/// An error returned from [`CreateBankPayoutTransaction`].
+#[derive(Debug, Error)]
+pub enum CreateBankPayoutTransactionError {}
+
+impl From<CreateBankPayoutTransactionError> for EversendError<CreateBankPayoutTransactionError> {
+    fn from(err: CreateBankPayoutTransactionError) -> Self {
+        Self::Operation(err)
+    }
+}
+
 #[derive(Deserialize)]
 pub struct CreateBankPayoutResponse {
     transaction: Transaction
@@ -58,10 +69,11 @@ pub trait CreateBankPayoutTransaction {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::payouts::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::payouts::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), CreateBankPayoutTransactionError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -92,7 +104,7 @@ pub trait CreateBankPayoutTransaction {
     async fn create_bank_payout_transaction(
         &self,
         params: &CreateBankPayoutTransactionBodyParams
-    ) -> Result<Transaction, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Transaction, CreateBankPayoutTransactionError>;
 }
 
 #[async_trait]
@@ -100,7 +112,7 @@ impl<'a> CreateBankPayoutTransaction for Payouts<'a> {
     async fn create_bank_payout_transaction(
         &self,
         params: &CreateBankPayoutTransactionBodyParams
-    ) -> Result<Transaction, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Transaction, CreateBankPayoutTransactionError> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
         let result = self

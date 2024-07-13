@@ -1,7 +1,18 @@
 use async_trait::async_trait;
 use serde::Deserialize;
+use thiserror::Error;
 
-use crate::beneficiaries::Beneficiaries;
+use crate::{beneficiaries::Beneficiaries, EversendError, EversendResult};
+
+/// An error returned from [`DeleteBeneficiary`].
+#[derive(Debug, Error)]
+pub enum DeleteBeneficiaryError {}
+
+impl From<DeleteBeneficiaryError> for EversendError<DeleteBeneficiaryError> {
+    fn from(err: DeleteBeneficiaryError) -> Self {
+        Self::Operation(err)
+    }
+}
 
 #[derive(Deserialize)]
 pub struct DeleteBeneficiaryApiResponse {
@@ -18,10 +29,11 @@ pub trait DeleteBeneficiary {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::beneficiaries::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), DeleteBeneficiaryError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -41,7 +53,7 @@ pub trait DeleteBeneficiary {
     async fn delete_beneficiary(
         &self,
         beneficiary_id: u32
-    ) -> Result<(), Box<dyn std::error::Error>>;
+    ) -> EversendResult<(), DeleteBeneficiaryError>;
 }
 
 #[async_trait]
@@ -49,7 +61,7 @@ impl<'a> DeleteBeneficiary for Beneficiaries<'a> {
     async fn delete_beneficiary(
         &self,
         beneficiary_id: u32
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> EversendResult<(), DeleteBeneficiaryError> {
         let url = format!("{}/beneficiaries/{}", self.eversend.base_url(), beneficiary_id);
 
         let _response = self
