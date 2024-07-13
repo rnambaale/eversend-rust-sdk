@@ -1,6 +1,17 @@
 use async_trait::async_trait;
+use thiserror::Error;
 
-use crate::{accounts::{types::Account, Accounts}, ApiResponseBody};
+use crate::{accounts::{types::Account, Accounts}, ApiResponseBody, EversendError, EversendResult};
+
+/// An error returned from [`GetProfile`].
+#[derive(Debug, Error)]
+pub enum GetProfileError {}
+
+impl From<GetProfileError> for EversendError<GetProfileError> {
+    fn from(err: GetProfileError) -> Self {
+        Self::Operation(err)
+    }
+}
 
 /// [Eversend Docs: Get Account Profile](https://eversend.readme.io/reference/get-account-profile)
 #[async_trait]
@@ -29,13 +40,13 @@ pub trait GetProfile {
     /// # }
     /// ```
     ///
-    async fn get_profile(&self) -> Result<Account, Box<dyn std::error::Error>>;
+    async fn get_profile(&self) -> EversendResult<Account, GetProfileError>;
 }
 
 
 #[async_trait]
 impl<'a> GetProfile for Accounts<'a> {
-    async fn get_profile(&self) -> Result<Account, Box<dyn std::error::Error>> {
+    async fn get_profile(&self) -> EversendResult<Account, GetProfileError> {
         let url = format!("{}/account", self.eversend.base_url());
 
         let account_response = self

@@ -11,7 +11,7 @@ pub struct DeActivateWalletParams<'a> {
     pub wallet: &'a WalletId
 }
 
-/// An error returned from [`CreateOrganization`].
+/// An error returned from [`DeactivateWallet`].
 #[derive(Debug, Error)]
 pub enum DeactivateWalletError {}
 
