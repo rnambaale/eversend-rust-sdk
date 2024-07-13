@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{beneficiaries::Beneficiaries, ApiResponseBody};
+use crate::{beneficiaries::Beneficiaries, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct CheckAccountParams {
@@ -10,6 +11,16 @@ pub struct CheckAccountParams {
 
     /// Phone number in international format. Optional if email is provided
     pub phone: Option<String>,
+}
+
+/// An error returned from [`CheckEversendAccount`].
+#[derive(Debug, Error)]
+pub enum CheckEversendAccountError {}
+
+impl From<CheckEversendAccountError> for EversendError<CheckEversendAccountError> {
+    fn from(err: CheckEversendAccountError) -> Self {
+        Self::Operation(err)
+    }
 }
 
 #[derive(Deserialize)]
@@ -30,10 +41,11 @@ pub trait CheckEversendAccount {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::beneficiaries::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), CheckEversendAccountError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -56,7 +68,7 @@ pub trait CheckEversendAccount {
     async fn check_eversend_account(
         &self,
         params: &CheckAccountParams
-    ) -> Result<bool, Box<dyn std::error::Error>>;
+    ) -> EversendResult<bool, CheckEversendAccountError>;
 }
 
 #[async_trait]
@@ -64,7 +76,7 @@ impl<'a> CheckEversendAccount for Beneficiaries<'a> {
     async fn check_eversend_account(
         &self,
         params: &CheckAccountParams
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+    ) -> EversendResult<bool, CheckEversendAccountError> {
         let url = format!("{}/beneficiaries/accounts/eversend", self.eversend.base_url());
 
         let response = self

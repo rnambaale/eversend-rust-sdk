@@ -1,12 +1,23 @@
 use async_trait::async_trait;
 use serde::Serialize;
+use thiserror::Error;
 
-use crate::{exchange::{types::Exchange as ExchangeResult, Exchange}, ApiResponseBody};
+use crate::{exchange::{types::Exchange as ExchangeResult, Exchange}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct CreateExchangeParams {
     /// Token from Create Quotation
     pub token: String
+}
+
+/// An error returned from [`CreateExchange`].
+#[derive(Debug, Error)]
+pub enum CreateExchangeError {}
+
+impl From<CreateExchangeError> for EversendError<CreateExchangeError> {
+    fn from(err: CreateExchangeError) -> Self {
+        Self::Operation(err)
+    }
 }
 
 #[async_trait]
@@ -17,11 +28,12 @@ pub trait CreateExchange {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::exchange::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::exchange::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     /// use eversend_rust_sdk::wallets::WalletId;
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), CreateExchangeError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -42,7 +54,7 @@ pub trait CreateExchange {
     async fn create_exchange(
         &self,
         params: &CreateExchangeParams
-    ) -> Result<ExchangeResult, Box<dyn std::error::Error>>;
+    ) -> EversendResult<ExchangeResult, CreateExchangeError>;
 }
 
 #[async_trait]
@@ -50,7 +62,7 @@ impl<'a> CreateExchange for Exchange<'a> {
     async fn create_exchange(
         &self,
         params: &CreateExchangeParams
-    ) -> Result<ExchangeResult, Box<dyn std::error::Error>> {
+    ) -> EversendResult<ExchangeResult, CreateExchangeError> {
         let url = format!("{}/exchanges", self.eversend.base_url());
 
         let response = self

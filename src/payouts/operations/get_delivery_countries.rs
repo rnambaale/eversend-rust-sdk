@@ -1,7 +1,18 @@
 use async_trait::async_trait;
 use serde::Deserialize;
+use thiserror::Error;
 
-use crate::{payouts::{Country, Payouts}, ApiResponseBody};
+use crate::{payouts::{Country, Payouts}, ApiResponseBody, EversendError, EversendResult};
+
+/// An error returned from [`GetDeliveryCountries`].
+#[derive(Debug, Error)]
+pub enum GetDeliveryCountriesError {}
+
+impl From<GetDeliveryCountriesError> for EversendError<GetDeliveryCountriesError> {
+    fn from(err: GetDeliveryCountriesError) -> Self {
+        Self::Operation(err)
+    }
+}
 
 #[derive(Deserialize)]
 struct DeliveryCountriesApiResponse {
@@ -17,10 +28,11 @@ pub trait GetDeliveryCountries {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::payouts::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::payouts::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GetDeliveryCountriesError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -37,14 +49,14 @@ pub trait GetDeliveryCountries {
     /// ```
     async fn get_delivery_countries(
         &self
-    ) -> Result<Vec<Country>, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Vec<Country>, GetDeliveryCountriesError>;
 }
 
 #[async_trait]
 impl<'a> GetDeliveryCountries for Payouts<'a> {
     async fn get_delivery_countries(
         &self
-    ) -> Result<Vec<Country>, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Vec<Country>, GetDeliveryCountriesError> {
         let url = format!("{}/payouts/countries", self.eversend.base_url());
 
         let result = self

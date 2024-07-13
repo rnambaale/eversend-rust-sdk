@@ -1,11 +1,22 @@
 use async_trait::async_trait;
 use serde::Deserialize;
+use thiserror::Error;
 
-use crate::{beneficiaries::{Beneficiaries, Beneficiary}, ApiResponseBody};
+use crate::{beneficiaries::{Beneficiaries, Beneficiary}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Deserialize)]
 struct GetBeneficaryApiResponse {
     beneficiary: Beneficiary,
+}
+
+/// An error returned from [`GetBeneficiary`].
+#[derive(Debug, Error)]
+pub enum GetBeneficiaryError {}
+
+impl From<GetBeneficiaryError> for EversendError<GetBeneficiaryError> {
+    fn from(err: GetBeneficiaryError) -> Self {
+        Self::Operation(err)
+    }
 }
 
 /// [Eversend Docs: Get A Beneficiary](https://eversend.readme.io/reference/get-a-beneficiary)
@@ -17,10 +28,11 @@ pub trait GetBeneficiary {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::beneficiaries::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GetBeneficiaryError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -38,7 +50,7 @@ pub trait GetBeneficiary {
     async fn get_beneficiary(
         &self,
         beneficiary_id: u32
-    ) -> Result<Beneficiary, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Beneficiary, GetBeneficiaryError>;
 }
 
 #[async_trait]
@@ -46,7 +58,7 @@ impl<'a> GetBeneficiary for Beneficiaries<'a> {
     async fn get_beneficiary(
         &self,
         beneficiary_id: u32
-    ) -> Result<Beneficiary, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Beneficiary, GetBeneficiaryError> {
         let url = format!("{}/beneficiaries/{}", self.eversend.base_url(), beneficiary_id);
 
         let response = self

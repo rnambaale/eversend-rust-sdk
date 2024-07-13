@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{payouts::{Payouts, Transaction}, ApiResponseBody};
+use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct CreateMomoPayoutTransactionParams {
@@ -28,6 +29,16 @@ pub struct CreateMomoPayoutTransactionParams {
     pub transaction_ref: String,
 }
 
+/// An error returned from [`CreateMomoPayoutTransaction`].
+#[derive(Debug, Error)]
+pub enum CreateMomoPayoutTransactionError {}
+
+impl From<CreateMomoPayoutTransactionError> for EversendError<CreateMomoPayoutTransactionError> {
+    fn from(err: CreateMomoPayoutTransactionError) -> Self {
+        Self::Operation(err)
+    }
+}
+
 #[derive(Deserialize)]
 pub struct CreateMomoPayoutResponse {
     transaction: Transaction
@@ -42,10 +53,11 @@ pub trait CreateMomoPayoutTransaction {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::payouts::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::payouts::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), CreateMomoPayoutTransactionError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -72,7 +84,7 @@ pub trait CreateMomoPayoutTransaction {
     async fn create_momo_payout_transaction(
         &self,
         params: &CreateMomoPayoutTransactionParams
-    ) -> Result<Transaction, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Transaction, CreateMomoPayoutTransactionError>;
 }
 
 #[async_trait]
@@ -80,7 +92,7 @@ impl<'a> CreateMomoPayoutTransaction for Payouts<'a> {
     async fn create_momo_payout_transaction(
         &self,
         params: &CreateMomoPayoutTransactionParams
-    ) -> Result<Transaction, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Transaction, CreateMomoPayoutTransactionError> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
         let result = self

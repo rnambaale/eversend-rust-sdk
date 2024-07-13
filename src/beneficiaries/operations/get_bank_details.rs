@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::Serialize;
+use thiserror::Error;
 
-use crate::{beneficiaries::{BankDetails, Beneficiaries}, ApiResponseBody};
+use crate::{beneficiaries::{BankDetails, Beneficiaries}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct GetBankDetailsParams {
@@ -18,6 +19,16 @@ pub struct GetBankDetailsParams {
     pub country_code: String,
 }
 
+/// An error returned from [`GetBankDetails`].
+#[derive(Debug, Error)]
+pub enum GetBankDetailsError {}
+
+impl From<GetBankDetailsError> for EversendError<GetBankDetailsError> {
+    fn from(err: GetBankDetailsError) -> Self {
+        Self::Operation(err)
+    }
+}
+
 /// [Eversend Docs: Get Bank Details](https://eversend.readme.io/reference/get-bank-details)
 #[async_trait]
 pub trait GetBankDetails {
@@ -27,10 +38,11 @@ pub trait GetBankDetails {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::beneficiaries::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GetBankDetailsError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -54,7 +66,7 @@ pub trait GetBankDetails {
     async fn get_bank_details(
         &self,
         params: &GetBankDetailsParams
-    ) -> Result<BankDetails, Box<dyn std::error::Error>>;
+    ) -> EversendResult<BankDetails, GetBankDetailsError>;
 }
 
 #[async_trait]
@@ -62,7 +74,7 @@ impl<'a> GetBankDetails for Beneficiaries<'a> {
     async fn get_bank_details(
         &self,
         params: &GetBankDetailsParams
-    ) -> Result<BankDetails, Box<dyn std::error::Error>> {
+    ) -> EversendResult<BankDetails, GetBankDetailsError> {
         let url = format!("{}/beneficiaries/accounts/banks", self.eversend.base_url());
 
         let response = self

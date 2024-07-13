@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{beneficiaries::{Beneficiaries, Beneficiary}, ApiResponseBody};
+use crate::{beneficiaries::{Beneficiaries, Beneficiary}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct GetBeneficiariesParams {
@@ -30,6 +31,16 @@ impl Default for GetBeneficiariesParams {
     }
 }
 
+/// An error returned from [`GetBeneficiaries`].
+#[derive(Debug, Error)]
+pub enum GetBeneficiariesError {}
+
+impl From<GetBeneficiariesError> for EversendError<GetBeneficiariesError> {
+    fn from(err: GetBeneficiariesError) -> Self {
+        Self::Operation(err)
+    }
+}
+
 #[derive(Deserialize)]
 struct BeneficiariesApiResponse {
     beneficiaries: Vec<Beneficiary>
@@ -44,10 +55,11 @@ pub trait GetBeneficiaries {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::beneficiaries::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GetBeneficiariesError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -65,7 +77,7 @@ pub trait GetBeneficiaries {
     async fn get_beneficiaries(
         &self,
         params: &GetBeneficiariesParams
-    ) -> Result<Vec<Beneficiary>,Box<dyn std::error::Error>>;
+    ) -> EversendResult<Vec<Beneficiary>, GetBeneficiariesError>;
 }
 
 #[async_trait]
@@ -73,7 +85,7 @@ impl<'a> GetBeneficiaries for Beneficiaries<'a> {
     async fn get_beneficiaries(
         &self,
         params: &GetBeneficiariesParams
-    ) -> Result<Vec<Beneficiary>,Box<dyn std::error::Error>> {
+    ) -> EversendResult<Vec<Beneficiary>, GetBeneficiariesError> {
         let url = format!("{}/beneficiaries", self.eversend.base_url());
 
         let result = self
