@@ -4,22 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{payouts::{Payouts, Transaction}, ApiResponseBody};
 
 #[derive(Serialize)]
-pub struct CreateMomoPayoutTransactionParams {
-    /// Recipient Country Code e.g. Nigeria should be NG, Uganda should be UG, etc
-    pub country: String,
-
-    /// Recipient First Name
-    #[serde(rename = "firstName")]
-    pub first_name: String,
-
-    /// Recipient Last Name
-    #[serde(rename = "lastName")]
-    pub last_name: String,
-
-    /// Recipient Phone Number
-    #[serde(rename = "phoneNumber")]
-    pub phone_number: String,
-
+pub struct CreateEversendPayoutTransactionBodyParams {
     /// JWT token from quotation
     pub token: String,
 
@@ -29,16 +14,16 @@ pub struct CreateMomoPayoutTransactionParams {
 }
 
 #[derive(Deserialize)]
-pub struct CreateMomoPayoutResponse {
+pub struct CreateEversendPayoutTransactionResponse {
     transaction: Transaction
 }
 
-/// [Eversend Docs: Create Payout Transaction Non Beneficiary - Momo](https://eversend.readme.io/reference/create-payout-transaction-non-beneficiary-momo)
+// [Eversend Docs: Create Payout Transaction Eversend](https://eversend.readme.io/reference/create-payout-transaction-eversend)
 #[async_trait]
-pub trait CreateMomoPayoutTransaction {
+pub trait CreateEversendPayoutTransaction {
     /// Create a [`Transaction`].
     ///
-    /// [Eversend Docs: Create Payout Transaction Non Beneficiary - Momo](https://eversend.readme.io/reference/create-payout-transaction-non-beneficiary-momo)
+    /// [Eversend Docs: Create Payout Transaction Eversend](https://eversend.readme.io/reference/create-payout-transaction-eversend)
     ///
     /// # Examples
     /// ```
@@ -53,14 +38,10 @@ pub trait CreateMomoPayoutTransaction {
     ///
     ///     let transaction = eversend
     ///         .payouts()
-    ///         .create_momo_payout_transaction(
-    ///             &CreateMomoPayoutTransactionParams {
-    ///                 country: String::from("UG"),
-    ///                 first_name: String::from("John"),
-    ///                 last_name: String::from("Doe"),
-    ///                 phone_number: String::from("+256789123456"),
+    ///         .create_eversend_payout_transaction(
+    ///             &CreateEversendPayoutTransactionBodyParams {
     ///                 token: String::from("some-token"),
-    ///                 transaction_ref: String::from("some-reference")
+    ///                 transaction_ref: String::from("some-reference"),
     ///             }
     ///         )
     ///         .await?;
@@ -69,17 +50,17 @@ pub trait CreateMomoPayoutTransaction {
     ///
     /// # }
     /// ```
-    async fn create_momo_payout_transaction(
+    async fn create_eversend_payout_transaction(
         &self,
-        params: &CreateMomoPayoutTransactionParams
+        params: &CreateEversendPayoutTransactionBodyParams
     ) -> Result<Transaction, Box<dyn std::error::Error>>;
 }
 
 #[async_trait]
-impl<'a> CreateMomoPayoutTransaction for Payouts<'a> {
-    async fn create_momo_payout_transaction(
+impl<'a> CreateEversendPayoutTransaction for Payouts<'a> {
+    async fn create_eversend_payout_transaction(
         &self,
-        params: &CreateMomoPayoutTransactionParams
+        params: &CreateEversendPayoutTransactionBodyParams
     ) -> Result<Transaction, Box<dyn std::error::Error>> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
@@ -91,7 +72,7 @@ impl<'a> CreateMomoPayoutTransaction for Payouts<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<ApiResponseBody<CreateMomoPayoutResponse>>()
+            .json::<ApiResponseBody<CreateEversendPayoutTransactionResponse>>()
             .await?;
 
         Ok(result.data.transaction)
@@ -159,14 +140,10 @@ mod tests {
 
         let transaction = eversend
             .payouts()
-            .create_momo_payout_transaction(
-                &CreateMomoPayoutTransactionParams {
-                    country: String::from("UG"),
-                    first_name: String::from("John"),
-                    last_name: String::from("Doe"),
-                    phone_number: String::from("+256789123456"),
+            .create_eversend_payout_transaction(
+                &CreateEversendPayoutTransactionBodyParams {
                     token: String::from("some-token"),
-                    transaction_ref: String::from("some-reference")
+                    transaction_ref: String::from("some-reference"),
                 }
             )
             .await
@@ -175,5 +152,6 @@ mod tests {
         assert_eq!(transaction.amount, 1500);
 
         mock.assert();
+
     }
 }
