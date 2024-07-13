@@ -1,7 +1,18 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{wallets::{types::{Wallet, WalletId}, Wallets}, ApiResponseBody};
+use crate::{wallets::{types::{Wallet, WalletId}, Wallets}, ApiResponseBody, EversendError, EversendResult};
+
+/// An error returned from [`GetWallet`].
+#[derive(Debug, Error)]
+pub enum GetWalletError {}
+
+impl From<GetWalletError> for EversendError<GetWalletError> {
+    fn from(err: GetWalletError) -> Self {
+        Self::Operation(err)
+    }
+}
 
 #[derive(Serialize, Deserialize)]
 struct WalletResponseData {
@@ -17,10 +28,11 @@ pub trait GetWallet {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::wallets::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::wallets::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GetWalletError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -38,7 +50,7 @@ pub trait GetWallet {
     async fn get_wallet(
         &self,
         wallet_id: &WalletId,
-    ) -> Result<Wallet, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Wallet, GetWalletError>;
 }
 
 #[async_trait]
@@ -46,7 +58,7 @@ impl<'a> GetWallet for Wallets<'a> {
     async fn get_wallet(
         &self,
         wallet_id: &WalletId,
-    ) -> Result<Wallet, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Wallet, GetWalletError> {
         let url = format!("{}/wallets/{}", self.eversend.base_url(), wallet_id);
 
         let wallet = self

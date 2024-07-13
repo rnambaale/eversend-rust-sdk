@@ -1,7 +1,18 @@
 use async_trait::async_trait;
 use serde::Deserialize;
+use thiserror::Error;
 
-use crate::{auth::Auth, core::ApiToken};
+use crate::{auth::Auth, core::ApiToken, EversendError, EversendResult};
+
+/// An error returned from [`GenerateApiToken`].
+#[derive(Debug, Error)]
+pub enum GenerateApiTokenError {}
+
+impl From<GenerateApiTokenError> for EversendError<GenerateApiTokenError> {
+    fn from(err: GenerateApiTokenError) -> Self {
+        Self::Operation(err)
+    }
+}
 
 /// [Eversend Docs: Generate Token](https://eversend.readme.io/reference/get-token)
 #[async_trait]
@@ -12,10 +23,11 @@ pub trait GenerateApiToken {
     ///
     /// # Examples
     /// ```
+    /// # use eversend_rust_sdk::EversendResult;
     /// # use eversend_rust_sdk::auth::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GenerateApiTokenError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -31,14 +43,14 @@ pub trait GenerateApiToken {
     ///
     async fn generate_api_token(
         &self,
-    ) -> Result<ApiToken, Box<dyn std::error::Error>>;
+    ) -> EversendResult<ApiToken, GenerateApiTokenError>;
 }
 
 #[async_trait]
 impl<'a> GenerateApiToken for Auth<'a> {
     async fn generate_api_token(
         &self
-    ) -> Result<ApiToken, Box<dyn std::error::Error>> {
+    ) -> EversendResult<ApiToken, GenerateApiTokenError> {
         let url = format!("{}/auth/token", self.eversend.base_url());
 
         let response = self

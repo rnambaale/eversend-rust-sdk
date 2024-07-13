@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::Serialize;
+use thiserror::Error;
 
-use crate::{exchange::{types::Quotation, Exchange}, wallets::WalletId, ApiResponseBody};
+use crate::{exchange::{types::Quotation, Exchange}, wallets::WalletId, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct CreateQuotationParams<'a> {
@@ -15,6 +16,16 @@ pub struct CreateQuotationParams<'a> {
     pub to: &'a WalletId,
 }
 
+/// An error returned from [`CreateQuotation`].
+#[derive(Debug, Error)]
+pub enum CreateQuotationError {}
+
+impl From<CreateQuotationError> for EversendError<CreateQuotationError> {
+    fn from(err: CreateQuotationError) -> Self {
+        Self::Operation(err)
+    }
+}
+
 #[async_trait]
 pub trait CreateQuotation {
     /// Creates a [`Quotation`].
@@ -23,11 +34,12 @@ pub trait CreateQuotation {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::exchange::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::exchange::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     /// use eversend_rust_sdk::wallets::WalletId;
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), CreateQuotationError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -50,7 +62,7 @@ pub trait CreateQuotation {
     async fn create_quotation(
         &self,
         params: &CreateQuotationParams<'_>
-    ) -> Result<Quotation, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Quotation, CreateQuotationError>;
 }
 
 #[async_trait]
@@ -58,7 +70,7 @@ impl<'a> CreateQuotation for Exchange<'a> {
     async fn create_quotation(
         &self,
         params: &CreateQuotationParams<'_>
-    ) -> Result<Quotation, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Quotation, CreateQuotationError> {
         let url = format!("{}/exchanges/quotation", self.eversend.base_url());
 
         let response = self

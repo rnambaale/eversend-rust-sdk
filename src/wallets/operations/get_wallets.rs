@@ -1,5 +1,16 @@
 use async_trait::async_trait;
-use crate::{wallets::{types::Wallet, Wallets}, ApiResponseBody};
+use thiserror::Error;
+use crate::{wallets::{types::Wallet, Wallets}, ApiResponseBody, EversendError, EversendResult};
+
+/// An error returned from [`GetWallets`].
+#[derive(Debug, Error)]
+pub enum GetWalletsError {}
+
+impl From<GetWalletsError> for EversendError<GetWalletsError> {
+    fn from(err: GetWalletsError) -> Self {
+        Self::Operation(err)
+    }
+}
 
 /// [Eversend Docs: List Wallets](https://eversend.readme.io/reference/get-wallets)
 #[async_trait]
@@ -10,10 +21,11 @@ pub trait GetWallets {
     ///
     /// # Examples
     /// ```
+    /// # use eversend_rust_sdk::EversendResult;
     /// # use eversend_rust_sdk::wallets::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), GetWalletsError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -30,14 +42,14 @@ pub trait GetWallets {
     ///
     async fn get_wallets(
         &self,
-    ) -> Result<ApiResponseBody<Vec<Wallet>>, Box<dyn std::error::Error>>;
+    ) -> EversendResult<ApiResponseBody<Vec<Wallet>>, GetWalletsError>;
 }
 
 #[async_trait]
 impl<'a> GetWallets for Wallets<'a> {
     async fn get_wallets(
         &self,
-    ) -> Result<ApiResponseBody<Vec<Wallet>>, Box<dyn std::error::Error>> {
+    ) -> EversendResult<ApiResponseBody<Vec<Wallet>>, GetWalletsError> {
         let url = format!("{}/wallets", self.eversend.base_url());
         let wallets = self
             .eversend

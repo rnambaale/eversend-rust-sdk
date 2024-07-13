@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
-use crate::{payouts::{Payouts, Transaction}, ApiResponseBody};
+use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct CreateBeneficiaryPayoutBodyParams {
@@ -11,6 +12,16 @@ pub struct CreateBeneficiaryPayoutBodyParams {
 
     /// JWT token from quotation
     pub token: String,
+}
+
+/// An error returned from [`CreateBeneficiaryPayoutTransaction`].
+#[derive(Debug, Error)]
+pub enum CreateBeneficiaryPayoutTransactionError {}
+
+impl From<CreateBeneficiaryPayoutTransactionError> for EversendError<CreateBeneficiaryPayoutTransactionError> {
+    fn from(err: CreateBeneficiaryPayoutTransactionError) -> Self {
+        Self::Operation(err)
+    }
 }
 
 #[derive(Deserialize)]
@@ -27,10 +38,11 @@ pub trait CreateBeneficiaryPayoutTransaction {
     ///
     /// # Examples
     /// ```
-    /// use eversend_rust_sdk::payouts::*;
+    /// # use eversend_rust_sdk::EversendResult;
+    /// # use eversend_rust_sdk::payouts::*;
     /// use eversend_rust_sdk::{ClientId,Eversend};
     ///
-    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn run() -> EversendResult<(), CreateBeneficiaryPayoutTransactionError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &String::from("sk_example_123456780")
@@ -47,13 +59,12 @@ pub trait CreateBeneficiaryPayoutTransaction {
     ///         .await?;
     ///
     ///     Ok(())
-    ///
     /// # }
     /// ```
     async fn create_beneficiary_payout_transaction(
         &self,
         params: &CreateBeneficiaryPayoutBodyParams
-    ) -> Result<Transaction, Box<dyn std::error::Error>>;
+    ) -> EversendResult<Transaction, CreateBeneficiaryPayoutTransactionError>;
 }
 
 #[async_trait]
@@ -61,7 +72,7 @@ impl<'a> CreateBeneficiaryPayoutTransaction for Payouts<'a> {
     async fn create_beneficiary_payout_transaction(
         &self,
         params: &CreateBeneficiaryPayoutBodyParams
-    ) -> Result<Transaction, Box<dyn std::error::Error>> {
+    ) -> EversendResult<Transaction, CreateBeneficiaryPayoutTransactionError> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
         let result = self
