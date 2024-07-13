@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{payouts::{Payouts, Quotation}, ApiResponseBody};
 
 #[derive(Serialize)]
-pub struct BodyParams {
+pub struct CreateQuotationBodyParams {
     /// Source amount to pay
     pub amount: u32,
 
@@ -56,7 +56,7 @@ pub trait CreateMomoAndBankPayoutQuotation {
     ///     let countries = eversend
     ///         .payouts()
     ///         .create_momo_and_bank_payout_quotation(
-    ///             &BodyParams {
+    ///             &CreateQuotationBodyParams {
     ///                 amount: 1000,
     ///                 amount_type: String::from("SOURCE"),
     ///                 destination_country: String::from("UG"),
@@ -73,7 +73,7 @@ pub trait CreateMomoAndBankPayoutQuotation {
     /// ```
     async fn create_momo_and_bank_payout_quotation(
         &self,
-        params: &BodyParams
+        params: &CreateQuotationBodyParams
     ) -> Result<CreateQuotationResponse, Box<dyn std::error::Error>>;
 }
 
@@ -81,7 +81,7 @@ pub trait CreateMomoAndBankPayoutQuotation {
 impl<'a> CreateMomoAndBankPayoutQuotation for Payouts<'a> {
     async fn create_momo_and_bank_payout_quotation(
         &self,
-        params: &BodyParams
+        params: &CreateQuotationBodyParams
     ) -> Result<CreateQuotationResponse, Box<dyn std::error::Error>> {
         let url = format!("{}/payouts/quotation", self.eversend.base_url());
 
@@ -148,7 +148,7 @@ mod tests {
         let response = eversend
             .payouts()
             .create_momo_and_bank_payout_quotation(
-                &BodyParams {
+                &CreateQuotationBodyParams {
                     amount: 1000,
                     amount_type: String::from("SOURCE"),
                     destination_country: String::from("UG"),

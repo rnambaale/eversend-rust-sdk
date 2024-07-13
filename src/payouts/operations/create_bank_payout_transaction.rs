@@ -4,7 +4,23 @@ use serde::{Deserialize, Serialize};
 use crate::{payouts::{Payouts, Transaction}, ApiResponseBody};
 
 #[derive(Serialize)]
-pub struct CreateMomoPayoutTransactionParams {
+pub struct CreateBankPayoutTransactionBodyParams {
+    /// Recipient bank account name
+    #[serde(rename = "bankAccountName")]
+    pub bank_account_name: String,
+
+    /// Account number of recipient
+    #[serde(rename = "bankAccountNumber")]
+    pub bank_account_number: String,
+
+    /// Bank code based on selected bank from the bank endpoint
+    #[serde(rename = "bankCode")]
+    pub bank_code: String,
+
+    /// Bank name based on country, gotten from delivery bank endpoint
+    #[serde(rename = "bankName")]
+    pub bank_name: String,
+
     /// Recipient Country Code e.g. Nigeria should be NG, Uganda should be UG, etc
     pub country: String,
 
@@ -29,16 +45,16 @@ pub struct CreateMomoPayoutTransactionParams {
 }
 
 #[derive(Deserialize)]
-pub struct CreateMomoPayoutResponse {
+pub struct CreateBankPayoutResponse {
     transaction: Transaction
 }
 
-/// [Eversend Docs: Create Payout Transaction Non Beneficiary - Momo](https://eversend.readme.io/reference/create-payout-transaction-non-beneficiary-momo)
+// [Eversend Docs: Create Payout Transaction Non Beneficiary - Bank](https://eversend.readme.io/reference/create-payout-transaction-non-beneficiary-bank)
 #[async_trait]
-pub trait CreateMomoPayoutTransaction {
+pub trait CreateBankPayoutTransaction {
     /// Create a [`Transaction`].
     ///
-    /// [Eversend Docs: Create Payout Transaction Non Beneficiary - Momo](https://eversend.readme.io/reference/create-payout-transaction-non-beneficiary-momo)
+    /// [Eversend Docs: Create Payout Transaction Non Beneficiary - Bank](https://eversend.readme.io/reference/create-payout-transaction-non-beneficiary-bank)
     ///
     /// # Examples
     /// ```
@@ -53,14 +69,18 @@ pub trait CreateMomoPayoutTransaction {
     ///
     ///     let transaction = eversend
     ///         .payouts()
-    ///         .create_momo_payout_transaction(
-    ///             &CreateMomoPayoutTransactionParams {
+    ///         .create_bank_payout_transaction(
+    ///             &CreateBankPayoutTransactionBodyParams {
     ///                 country: String::from("UG"),
     ///                 first_name: String::from("John"),
     ///                 last_name: String::from("Doe"),
     ///                 phone_number: String::from("+256789123456"),
     ///                 token: String::from("some-token"),
-    ///                 transaction_ref: String::from("some-reference")
+    ///                 transaction_ref: String::from("some-reference"),
+    ///                 bank_account_name: String::from("John Doe"),
+    ///                 bank_account_number: String::from("12345"),
+    ///                 bank_code: String::from("1234"),
+    ///                 bank_name: String::from("World Bank"),
     ///             }
     ///         )
     ///         .await?;
@@ -69,17 +89,17 @@ pub trait CreateMomoPayoutTransaction {
     ///
     /// # }
     /// ```
-    async fn create_momo_payout_transaction(
+    async fn create_bank_payout_transaction(
         &self,
-        params: &CreateMomoPayoutTransactionParams
+        params: &CreateBankPayoutTransactionBodyParams
     ) -> Result<Transaction, Box<dyn std::error::Error>>;
 }
 
 #[async_trait]
-impl<'a> CreateMomoPayoutTransaction for Payouts<'a> {
-    async fn create_momo_payout_transaction(
+impl<'a> CreateBankPayoutTransaction for Payouts<'a> {
+    async fn create_bank_payout_transaction(
         &self,
-        params: &CreateMomoPayoutTransactionParams
+        params: &CreateBankPayoutTransactionBodyParams
     ) -> Result<Transaction, Box<dyn std::error::Error>> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
@@ -91,7 +111,7 @@ impl<'a> CreateMomoPayoutTransaction for Payouts<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<ApiResponseBody<CreateMomoPayoutResponse>>()
+            .json::<ApiResponseBody<CreateBankPayoutResponse>>()
             .await?;
 
         Ok(result.data.transaction)
@@ -159,14 +179,18 @@ mod tests {
 
         let transaction = eversend
             .payouts()
-            .create_momo_payout_transaction(
-                &CreateMomoPayoutTransactionParams {
+            .create_bank_payout_transaction(
+                &CreateBankPayoutTransactionBodyParams {
                     country: String::from("UG"),
                     first_name: String::from("John"),
                     last_name: String::from("Doe"),
                     phone_number: String::from("+256789123456"),
                     token: String::from("some-token"),
-                    transaction_ref: String::from("some-reference")
+                    transaction_ref: String::from("some-reference"),
+                    bank_account_name: String::from("John Doe"),
+                    bank_account_number: String::from("12345"),
+                    bank_code: String::from("1234"),
+                    bank_name: String::from("World Bank"),
                 }
             )
             .await
