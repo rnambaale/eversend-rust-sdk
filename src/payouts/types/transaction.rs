@@ -34,7 +34,7 @@ pub struct Transaction {
     /// Defaults to 0
     pub fees: u32,
 
-    pub reason: String,
+    pub reason: Option<String>,
 
     #[serde(rename = "sourceCurrency")]
     pub source_currency: String,
@@ -45,7 +45,7 @@ pub struct Transaction {
     pub transaction_id: String,
 
     #[serde(rename = "transactionRef")]
-    pub transaction_ref: String,
+    pub transaction_ref: Option<String>,
 
     #[serde(rename = "type")]
     pub transaction_type: String,

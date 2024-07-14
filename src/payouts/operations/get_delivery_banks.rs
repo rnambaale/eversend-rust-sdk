@@ -95,28 +95,17 @@ mod tests {
                     "code": 200,
                     "data": [
                         {
+                            "id": "342",
                             "active": true,
+                            "name": "Default Bank",
                             "branch": {
-                                "city": "Kampala",
-                                "code": "CODE11",
-                                "id": "11",
-                                "name": "Branch One",
-                                "state": "The State",
+                                "id": "312",
+                                "code": "",
+                                "state": "N/A",
+                                "city": "N/A",
+                                "name": "Main Branch"
                             },
-                            "id": "1",
-                            "name": "Bank One",
-                        },
-                        {
-                            "active": true,
-                            "branch": {
-                                "city": "Kampala",
-                                "code": "CODE21",
-                                "id": "21",
-                                "name": "Branch Two",
-                                "state": "The State",
-                            },
-                            "id": "2",
-                            "name": "Bank Two",
+                            "code": "0000"
                         },
                     ]
                 }).to_string(),
@@ -129,11 +118,9 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(response[0].name, "Bank One");
-        assert_eq!(response[0].branch.code, "CODE11");
-
-        assert_eq!(response[1].name, "Bank Two");
-        assert_eq!(response[1].branch.code, "CODE21");
+        assert_eq!(response[0].name, "Default Bank");
+        assert_eq!(response[0].branch.id, "312");
+        assert_eq!(response[0].branch.name, "Main Branch");
         mock.assert();
 
     }

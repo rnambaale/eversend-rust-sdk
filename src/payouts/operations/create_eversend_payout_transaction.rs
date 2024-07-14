@@ -117,36 +117,33 @@ mod tests {
                     "code": 200,
                     "data": {
                         "transaction": {
-                            "transactionId": "123",
-                            "currency": "UG",
-                            "type": "Deposit",
-                            "amount": 1500,
+                            "transactionId": "BP11678896212253",
+                            "transactionRef": "externalRefS",
+                            "currency": "UGX",
+                            "type": "payout",
+                            "amount": 500,
                             "fees": 0,
-                            "userId": 0,
+                            "userId": 3,
                             "balanceBefore": 0,
-                            "balanceAfter": 1500,
-                            "beneficiary": {
-                                "country": "UG",
-                                "createdAt": "2024-07-10 00:00:00",
-                                "id": 0,
-                                "firstName": "John",
-                                "lastName": "Doe",
-                                "phoneNumber": "+256789123456",
-                                "updatedAt": "2024-07-10 00:00:00"
-                            },
-                            "createdAt": "2024-07-10 00:00:00",
-                            "destinationAmount": "1500",
-                            "destinationCountry": "UG",
-                            "destinationCurrency": "UGX",
-                            "fees": 0,
-                            "reason": "",
+                            "balanceAfter": 0,
                             "sourceCurrency": "UGX",
-                            "status": "",
-                            "transactionRef": "",
-                            "updatedAt": "2024-07-10 00:00:00",
-                        },
-                    }
-                }).to_string(),
+                            "destinationCurrency": "UGX",
+                            "destinationAmount": "500",
+                            "destinationCountry": "UG",
+                            "beneficiary": {
+                                "firstName": "Stone",
+                                "lastName": "Atwine",
+                                "phoneNumber": "+2567574747",
+                                "country": "UG"
+                            },
+                            "reason": null,
+                            "status": "pending",
+                            "createdAt": "2023-03-15T16:03:36.860Z",
+                            "updatedAt": "2023-03-15T16:03:36.861Z"
+                        }
+                    },
+                    "success": true
+                  }).to_string(),
             )
             .create();
 
@@ -161,7 +158,7 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(transaction.amount, 1500);
+        assert_eq!(transaction.amount, 500);
 
         mock.assert();
 

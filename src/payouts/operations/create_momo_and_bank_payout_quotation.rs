@@ -69,11 +69,11 @@ pub trait CreateMomoAndBankPayoutQuotation {
     ///         .payouts()
     ///         .create_momo_and_bank_payout_quotation(
     ///             &CreateQuotationBodyParams {
-    ///                 amount: 1000,
+    ///                 amount: 20,
     ///                 amount_type: String::from("SOURCE"),
-    ///                 destination_country: String::from("UG"),
-    ///                 destination_currency: String::from("UGX"),
-    ///                 source_wallet: String::from("UGX"),
+    ///                 destination_country: String::from("KE"),
+    ///                 destination_currency: String::from("KES"),
+    ///                 source_wallet: String::from("KES"),
     ///                 transaction_type: String::from("momo"),
     ///             }
     ///         )
@@ -137,23 +137,24 @@ mod tests {
                 json!({
                     "code": 200,
                     "data": {
-                        "token": "some-test-quotation-token",
+                        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdW90YXRpb24iOnsic291cmNlQ291bnRyeSI6IlVHIiwic291cmNlQ3VycmVuY3kiOiJVR1giLCJzb3VyY2VBbW91bnQiOiI3MDAiLCJkZXN0aW5hdGlvbkNvdW50cnkiOiJLRSIsImRlc3RpbmF0aW9uQ3VycmVuY3kiOiJLRVMiLCJkZXN0aW5hdGlvbkFtb3VudCI6IjIxLjcxIiwiZXhjaGFuZ2VSYXRlIjoiMC4wMzEwMDcyMDE5ODEzNjciLCJ0b3RhbEZlZXMiOiIyNTAwIiwidG90YWxBbW91bnQiOiIzMjAwLjAwIiwidHlwZSI6Im1vbW8iLCJhbW91bnRUeXBlIjoiU09VUkNFIiwiYW1vdW50IjoiNzAwIn0sImlhdCI6MTY2MTg4Mzc1NywiZXhwIjoxNjYxODg1NTU3fQ.7Q4RweZ2Osf9YwlXfqvv_FzKM9ob-AjlCtINj17cPEI",
                         "quotation": {
-                            "amount": 1000,
-                            "amountType": "SOURCE",
-                            "destinationAmount": "1500",
-                            "destinationCountry": "UG",
-                            "destinationCurrency": "UGX",
-                            "exchangeRate": "1",
-                            "sourceAmount": "2000",
                             "sourceCountry": "UG",
                             "sourceCurrency": "UGX",
-                            "totalAmount": "1050",
-                            "totalFees": "50",
+                            "sourceAmount": "1000",
+                            "destinationCountry": "NG",
+                            "destinationCurrency": "NGN",
+                            "destinationAmount": "21.71",
+                            "exchangeRate": "0.031007201981367",
+                            "totalFees": "2500",
+                            "totalAmount": "3200.00",
                             "type": "momo",
-                        },
-                    }
-                }).to_string(),
+                            "amountType": "SOURCE",
+                            "amount": "1000"
+                        }
+                    },
+                    "success": true
+                  }).to_string(),
             )
             .create();
 
@@ -161,19 +162,22 @@ mod tests {
             .payouts()
             .create_momo_and_bank_payout_quotation(
                 &CreateQuotationBodyParams {
-                    amount: 1000,
+                    amount: 20,
                     amount_type: String::from("SOURCE"),
-                    destination_country: String::from("UG"),
-                    destination_currency: String::from("UGX"),
-                    source_wallet: String::from("UGX"),
+                    destination_country: String::from("KE"),
+                    destination_currency: String::from("KES"),
+                    source_wallet: String::from("KES"),
                     transaction_type: String::from("momo"),
                 }
             )
             .await
             .unwrap();
 
-        assert_eq!(response.token, "some-test-quotation-token");
-        assert_eq!(response.quotation.total_amount, "1050");
+        assert_eq!(
+            response.token,
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdW90YXRpb24iOnsic291cmNlQ291bnRyeSI6IlVHIiwic291cmNlQ3VycmVuY3kiOiJVR1giLCJzb3VyY2VBbW91bnQiOiI3MDAiLCJkZXN0aW5hdGlvbkNvdW50cnkiOiJLRSIsImRlc3RpbmF0aW9uQ3VycmVuY3kiOiJLRVMiLCJkZXN0aW5hdGlvbkFtb3VudCI6IjIxLjcxIiwiZXhjaGFuZ2VSYXRlIjoiMC4wMzEwMDcyMDE5ODEzNjciLCJ0b3RhbEZlZXMiOiIyNTAwIiwidG90YWxBbW91bnQiOiIzMjAwLjAwIiwidHlwZSI6Im1vbW8iLCJhbW91bnRUeXBlIjoiU09VUkNFIiwiYW1vdW50IjoiNzAwIn0sImlhdCI6MTY2MTg4Mzc1NywiZXhwIjoxNjYxODg1NTU3fQ.7Q4RweZ2Osf9YwlXfqvv_FzKM9ob-AjlCtINj17cPEI"
+        );
+        assert_eq!(response.quotation.total_amount, "3200.00");
 
         mock.assert();
 
