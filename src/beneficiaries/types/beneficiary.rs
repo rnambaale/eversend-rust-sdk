@@ -14,11 +14,11 @@ pub struct Beneficiary {
     pub last_name: String,
 
     /// The email.
-    pub email: String,
+    pub email: Option<String>,
 
     /// Phone number in international format.
     #[serde(rename = "phoneNumber")]
-    pub phone_number: String,
+    pub phone_number: Option<String>,
 
     /// The bank Name.
     #[serde(rename = "bankName")]
@@ -44,7 +44,7 @@ pub struct Beneficiary {
     pub is_eversend: bool,
 
     /// The avatar.
-    pub avatar: String,
+    pub avatar: Option<String>,
 
     /// Is Bank? Deafults to true.
     #[serde(rename = "isBank")]

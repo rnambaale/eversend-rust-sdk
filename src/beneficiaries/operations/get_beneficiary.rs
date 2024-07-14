@@ -6,12 +6,15 @@ use crate::{beneficiaries::{Beneficiaries, Beneficiary}, ApiResponseBody, Everse
 
 #[derive(Deserialize)]
 struct GetBeneficaryApiResponse {
-    beneficiary: Beneficiary,
+    beneficiary: Vec<Beneficiary>,
 }
 
 /// An error returned from [`GetBeneficiary`].
 #[derive(Debug, Error)]
-pub enum GetBeneficiaryError {}
+pub enum GetBeneficiaryError {
+    #[error("could not find beneficiary in the response")]
+    NotFound
+}
 
 impl From<GetBeneficiaryError> for EversendError<GetBeneficiaryError> {
     fn from(err: GetBeneficiaryError) -> Self {
@@ -71,7 +74,15 @@ impl<'a> GetBeneficiary for Beneficiaries<'a> {
             .json::<ApiResponseBody<GetBeneficaryApiResponse>>()
             .await?;
 
-        Ok(response.data.beneficiary)
+        let mut beneficiaries_list = response.data.beneficiary;
+
+        if beneficiaries_list.is_empty() {
+            return Err(EversendError::Operation(GetBeneficiaryError::NotFound))
+        }
+
+        let beneficiary = beneficiaries_list.remove(0);
+
+        Ok(beneficiary)
     }
 }
 
@@ -94,32 +105,36 @@ mod tests {
             .set_api_token(&ApiToken::from("some_test_token"))
             .build();
 
-        let _mock = mock("GET", "/beneficiaries/206")
+        let mock = mock("GET", "/beneficiaries/206")
             .with_status(200)
+            // it is a bit odd that an array of objects is returned here,
+            // but it is what the docs say.
             .with_body(
                 json!({
                     "code": 200,
                     "data": {
-                        "beneficiary" : {
-                            "id": 1,
-                            "firstName": "Frank",
-                            "lastName": "Odongkara",
-                            "email": "frank@email.com",
-                            "phoneNumber": "+256781650001",
-                            "bankName": "",
-                            "bankCode": "",
-                            "bankAccountName": "",
-                            "bankAccountNumber": "",
-                            "country": "UG",
-                            "isEversend": true,
-                            "transactions": [],
-                            "avatar": "",
-                            "isBank": false,
-                            "isMomo": true,
-                        }
+                        "beneficiary": [
+                            {
+                                "id": 206,
+                                "firstName": "Frank",
+                                "lastName": "Odongkara",
+                                "email": "frankodon@gmail.com",
+                                "phoneNumber": null,
+                                "bankName": null,
+                                "bankCode": null,
+                                "bankAccountName": null,
+                                "bankAccountNumber": null,
+                                "country": "UG",
+                                "isEversend": true,
+                                "transactions": [],
+                                "avatar": null,
+                                "isBank": true,
+                                "isMomo": true
+                            }
+                        ]
                     },
                     "success": true
-                }).to_string(),
+                  }).to_string(),
             )
             .create();
 
@@ -129,6 +144,8 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(beneficiary.phone_number, String::from("+256781650001"));
+        assert_eq!(beneficiary.first_name, String::from("Frank"));
+        assert_eq!(beneficiary.id, 206);
+        mock.assert();
     }
 }

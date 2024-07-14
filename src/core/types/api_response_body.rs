@@ -4,4 +4,5 @@ use serde::{Deserialize, Serialize};
 pub struct ApiResponseBody<T> {
     pub code: u16,
     pub data: T,
+    pub success: bool,
 }
