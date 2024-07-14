@@ -110,7 +110,8 @@ mod tests {
                             "amountInBaseCurrency": 800,
                             "isMain": false,
                         }
-                    ]
+                    ],
+                    "success": true
                 }).to_string(),
             )
             .create();

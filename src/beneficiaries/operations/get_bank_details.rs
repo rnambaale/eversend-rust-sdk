@@ -52,8 +52,8 @@ pub trait GetBankDetails {
     ///         .beneficiaries()
     ///         .get_bank_details(
     ///             &GetBankDetailsParams {
-    ///                 account_number: String::from("0192836"),
-    ///                 bank_code: String::from("WRLDBNK"),
+    ///                 account_number: String::from("0012033048"),
+    ///                 bank_code: String::from("14"),
     ///                 country_code: String::from("UG"),
     ///             }
     ///         )
@@ -117,9 +117,9 @@ mod tests {
                 json!({
                     "code": 200,
                     "data": {
-                        "accountName": "John Doe",
-                        "accountNumber": "0192836",
-                        "bankCode": "WRLDBNK",
+                        "bank_code": "14",
+                        "account_number": "0012033048",
+                        "account_name": "JOHN DOE"
                     },
                     "success": true
                 }).to_string(),
@@ -130,8 +130,8 @@ mod tests {
             .beneficiaries()
             .get_bank_details(
                 &GetBankDetailsParams {
-                    account_number: String::from("0192836"),
-                    bank_code: String::from("WRLDBNK"),
+                    account_number: String::from("0012033048"),
+                    bank_code: String::from("14"),
                     country_code: String::from("UG"),
                 }
             )
@@ -139,7 +139,7 @@ mod tests {
             .unwrap();
 
         mock.assert();
-        assert_eq!(bank_details.account_name, String::from("John Doe"));
+        assert_eq!(bank_details.account_name, String::from("JOHN DOE"));
     }
 }
 

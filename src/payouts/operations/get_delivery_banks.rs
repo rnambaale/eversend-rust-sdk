@@ -107,7 +107,8 @@ mod tests {
                             },
                             "code": "0000"
                         },
-                    ]
+                    ],
+                    "success": true
                 }).to_string(),
             )
             .create();

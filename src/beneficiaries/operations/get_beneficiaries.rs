@@ -130,40 +130,45 @@ mod tests {
                     "data": {
                         "beneficiaries": [
                             {
-                                "id": 1,
-                                "firstName": "Frank",
-                                "lastName": "Odongkara",
-                                "email": "frank@email.com",
-                                "phoneNumber": "+256781650001",
-                                "bankName": "",
-                                "bankCode": "",
-                                "bankAccountName": "",
-                                "bankAccountNumber": "",
-                                "country": "UG",
-                                "isEversend": true,
-                                "avatar": "",
-                                "isBank": false,
-                                "isMomo": true,
-                            },
-                            {
-                                "id": 2,
-                                "firstName": "Jane",
+                                "id": 196,
+                                "firstName": "John",
                                 "lastName": "Doe",
-                                "email": "frank@email.com",
-                                "phoneNumber": "+254781650002",
-                                "bankName": "Stanbic Bank",
-                                "bankCode": "The Bank Code",
-                                "bankAccountName": "Jane",
-                                "bankAccountNumber": "28776353527287",
+                                "email": null,
+                                "phoneNumber": null,
+                                "bankName": null,
+                                "bankCode": null,
+                                "bankAccountName": null,
+                                "bankAccountNumber": null,
                                 "country": "KE",
                                 "isEversend": true,
-                                "avatar": "",
+                                "avatar": null,
                                 "isBank": true,
-                                "isMomo": true,
+                                "isMomo": true
                             },
-                        ]
-                    }
-                }).to_string(),
+                            {
+                                "id": 189,
+                                "firstName": "Lucas",
+                                "lastName": "Graham",
+                                "email": null,
+                                "phoneNumber": null,
+                                "bankName": null,
+                                "bankCode": null,
+                                "bankAccountName": null,
+                                "bankAccountNumber": null,
+                                "country": "RW",
+                                "isEversend": false,
+                                "avatar": null,
+                                "isBank": false,
+                                "isMomo": true
+                            }
+                        ],
+                        "total": 2,
+                        "limit": 10,
+                        "page": 1,
+                        "totalBeneficiaries": 2
+                    },
+                    "success": true
+                  }).to_string(),
             )
             .create();
 
@@ -175,9 +180,11 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(response[0].phone_number, "+256781650001");
+        assert_eq!(response[0].first_name, "John");
+        assert_eq!(response[0].last_name, "Doe");
 
-        assert_eq!(response[1].phone_number, "+254781650002");
+        assert_eq!(response[1].first_name, "Lucas");
+        assert_eq!(response[1].last_name, "Graham");
         mock.assert();
 
     }
