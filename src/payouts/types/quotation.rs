@@ -3,7 +3,7 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct Quotation {
 
-    pub amount: u32,
+    pub amount: String,
 
     #[serde(rename = "amountType")]
     pub amount_type: String,

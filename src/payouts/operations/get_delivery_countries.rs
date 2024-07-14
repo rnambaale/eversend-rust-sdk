@@ -75,7 +75,7 @@ impl<'a> GetDeliveryCountries for Payouts<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{core::ClientId, eversend::Eversend, ApiToken};
+    use crate::{core::ClientId, eversend::Eversend, payouts::CountryPaymentType, ApiToken};
 
     use super::*;
     use mockito::{self, mock};
@@ -101,20 +101,39 @@ mod tests {
                         "countries": [
                             {
                                 "country": "UG",
-                                "id": "1",
+                                "id": "999",
                                 "name": "Uganda",
-                                "paymentTypes": ["mobile money", "bank"],
-                                "phonePrefix": "+256",
+                                "paymentTypes": [
+                                  "eversend",
+                                  "momo",
+                                  "bank"
+                                ],
+                                "phonePrefix": "+256"
                             },
                             {
                                 "country": "KE",
-                                "id": "2",
+                                "id": "998",
                                 "name": "Kenya",
-                                "paymentTypes": ["mobile money", "cash"],
-                                "phonePrefix": "+254",
+                                "paymentTypes": [
+                                  "eversend",
+                                  "momo",
+                                  "bank"
+                                ],
+                                "phonePrefix": "+254"
                             },
+                            {
+                                "country": "NG",
+                                "id": "990",
+                                "name": "Nigeria",
+                                "paymentTypes": [
+                                    "eversend",
+                                    "bank"
+                                ],
+                                "phonePrefix": "+234"
+                            }
                         ]
-                    }
+                    },
+                    "success": true
                 }).to_string(),
             )
             .create();
@@ -126,10 +145,26 @@ mod tests {
             .unwrap();
 
         assert_eq!(response[0].country, "UG");
-        assert_eq!(response[0].payment_types, vec!["mobile money", "bank"]);
+        assert_eq!(
+            response[0].payment_types,
+            vec![
+                CountryPaymentType::EVERSEND,
+                CountryPaymentType::MOMO,
+                CountryPaymentType::BANK
+            ]
+        );
 
         assert_eq!(response[1].country, "KE");
-        assert_eq!(response[1].payment_types, vec!["mobile money", "cash"]);
+        assert_eq!(response[1].phone_prefix, "+254");
+
+        assert_eq!(response[2].country, "NG");
+        assert_eq!(
+            response[2].payment_types,
+            vec![
+                CountryPaymentType::EVERSEND,
+                CountryPaymentType::BANK
+            ]
+        );
         mock.assert();
 
     }

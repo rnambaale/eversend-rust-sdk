@@ -69,12 +69,12 @@ pub trait CreateEversendPayoutQuotation {
     ///         .payouts()
     ///         .create_eversend_payout_quotation(
     ///             &CreateEversendPayoutBodyParams {
-    ///                 amount: 1000,
+    ///                 amount: 20,
     ///                 amount_type: String::from("SOURCE"),
-    ///                 email: String::from("jdoe@example.com"),
+    ///                 email: String::from("satowind@gmail.com"),
     ///                 identifier: String::from("email"),
     ///                 phone: String::from("+256789123456"),
-    ///                 source_wallet: String::from("UGX"),
+    ///                 source_wallet: String::from("KES"),
     ///                 tag: String::from("the-tag"),
     ///             }
     ///         )
@@ -138,38 +138,39 @@ mod tests {
                 json!({
                     "code": 200,
                     "data": {
-                        "token": "some-test-quotation-token",
+                        "token": "jwtTokenExample",
                         "quotation": {
-                            "amount": 1000,
-                            "amountType": "SOURCE",
-                            "destinationAmount": "1500",
-                            "destinationCountry": "UG",
-                            "destinationCurrency": "UGX",
-                            "exchangeRate": "1",
-                            "sourceAmount": "2000",
                             "sourceCountry": "UG",
                             "sourceCurrency": "UGX",
-                            "totalAmount": "1050",
-                            "totalFees": "50",
-                            "type": "momo",
+                            "sourceAmount": "1000",
+                            "destinationCountry": "NG",
+                            "destinationCurrency": "NGN",
+                            "destinationAmount": "191.16",
+                            "exchangeRate": "0.19115688881437",
+                            "totalFees": "0",
+                            "totalAmount": "1000.00",
+                            "type": "eversend",
+                            "amountType": "SOURCE",
+                            "amount": "1000",
                             "merchant": {
-                                "result": "Success",
+                                "result": "successful",
                                 "merchantExists": true,
-                                "country": "UG",
-                                "defaultWallet": "UGX",
-                                "isMerchant": true,
-                                "firstName": "John",
-                                "lastName": "Doe",
-                                "email": "jdoe@example.com",
+                                "country": "NG",
+                                "defaultWallet": "NGN",
+                                "isMerchant": false,
+                                "firstName": "TOCHUKWU ALPHONSUS",
+                                "lastName": "OGUGUA",
+                                "email": "evensatowind@gmail.com",
                                 "phoneNumber": {
-                                    "prefix": "+256",
-                                    "number": "789123456"
+                                    "prefix": "+234",
+                                    "number": "8038385263"
                                 },
-                                "tag": "some-tag"
+                                "tag": "satoseries"
                             }
-                        },
-                    }
-                }).to_string(),
+                        }
+                    },
+                    "success": true
+                  }).to_string(),
             )
             .create();
 
@@ -177,29 +178,29 @@ mod tests {
             .payouts()
             .create_eversend_payout_quotation(
                 &CreateEversendPayoutBodyParams {
-                    amount: 1000,
+                    amount: 20,
                     amount_type: String::from("SOURCE"),
-                    email: String::from("jdoe@example.com"),
+                    email: String::from("satowind@gmail.com"),
                     identifier: String::from("email"),
                     phone: String::from("+256789123456"),
-                    source_wallet: String::from("UGX"),
+                    source_wallet: String::from("KES"),
                     tag: String::from("the-tag"),
                 }
             )
             .await
             .unwrap();
 
-        assert_eq!(response.token, "some-test-quotation-token");
-        assert_eq!(response.quotation.total_amount, "1050");
+        assert_eq!(response.token, "jwtTokenExample");
+        assert_eq!(response.quotation.total_amount, "1000.00");
 
         let merchant = response.quotation.merchant.unwrap();
-        assert_eq!(merchant.result, "Success");
+        assert_eq!(merchant.result, "successful");
         assert_eq!(merchant.merchant_exists, true);
-        assert_eq!(merchant.country, "UG");
-        assert_eq!(merchant.default_wallet, "UGX");
-        assert_eq!(merchant.is_merchant, true);
-        assert_eq!(merchant.phone_number.number, "789123456");
-        assert_eq!(merchant.phone_number.prefix, "+256");
+        assert_eq!(merchant.country, "NG");
+        assert_eq!(merchant.default_wallet, "NGN");
+        assert_eq!(merchant.is_merchant, false);
+        assert_eq!(merchant.phone_number.number, "8038385263");
+        assert_eq!(merchant.phone_number.prefix, "+234");
 
         mock.assert();
     }
