@@ -102,12 +102,12 @@ mod tests {
                     "data": {
                         "wallet" : {
                             "currency": "UGX",
-                            "currencyType": "some type",
-                            "amount": 1000,
+                            "currencyType": "fiat",
+                            "amount": 500,
                             "enabled": true,
-                            "name": "Ug Wallet",
-                            "icon": "ug-flag",
-                            "amountInBaseCurrency": 1000,
+                            "name": "Ugandan Shilling",
+                            "icon": "https://source.unsplash.com/user/c_v_r/1900x800",
+                            "amountInBaseCurrency": 500,
                             "isMain": true,
                         }
                     },
@@ -123,6 +123,6 @@ mod tests {
             .unwrap();
 
         assert_eq!(wallet.currency, WalletId::from("UGX").to_string());
-        assert_eq!(wallet.currency_type, "some type");
+        assert_eq!(wallet.currency_type, "fiat");
     }
 }

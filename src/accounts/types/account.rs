@@ -10,7 +10,7 @@ pub struct Account {
     pub address: String,
     pub town: String,
     pub country: String,
-    pub logo: String,
+    pub logo: Option<String>,
     pub website: String,
 
     #[serde(rename = "isVerified")]

@@ -105,7 +105,7 @@ mod tests {
             .set_api_token(&ApiToken::from("some_test_token"))
             .build();
 
-        let _mock = mock("POST", "/wallets/activate")
+        let mock = mock("POST", "/wallets/activate")
             .with_status(200)
             .with_body(
                 json!({
@@ -113,13 +113,13 @@ mod tests {
                     "data": {
                         "wallet" : {
                             "currency": "UGX",
-                            "currencyType": "some type",
-                            "amount": 1000,
+                            "currencyType": "fiat",
+                            "amount": 500,
                             "enabled": true,
-                            "name": "Ug Wallet",
-                            "icon": "ug-flag",
-                            "amountInBaseCurrency": 1000,
-                            "isMain": true,
+                            "name": "Ugandan Shilling",
+                            "icon": "https://source.unsplash.com/user/c_v_r/1900x800",
+                            "amountInBaseCurrency": 500,
+                            "isMain": false,
                         }
                     },
                     "success": true
@@ -138,6 +138,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(wallet.currency, WalletId::from("UGX").to_string());
-        assert_eq!(wallet.currency_type, "some type");
+        assert_eq!(wallet.currency_type, "fiat");
+        mock.assert();
     }
 }

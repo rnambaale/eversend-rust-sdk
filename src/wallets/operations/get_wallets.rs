@@ -84,7 +84,7 @@ mod tests {
             .set_api_token(&ApiToken::from("some_test_token"))
             .build();
 
-        let _mock = mock("GET", "/wallets")
+        let mock = mock("GET", "/wallets")
             .with_status(200)
             .with_body(
                 json!({
@@ -92,23 +92,13 @@ mod tests {
                     "data": [
                         {
                             "currency": "UGX",
-                            "currencyType": "some type",
-                            "amount": 1000,
+                            "currencyType": "fiat",
+                            "amount": 500,
                             "enabled": true,
-                            "name": "Ug Wallet",
-                            "icon": "ug-flag",
-                            "amountInBaseCurrency": 1000,
+                            "name": "Ugandan Shilling",
+                            "icon": "https://source.unsplash.com/user/c_v_r/1900x800",
+                            "amountInBaseCurrency": 500,
                             "isMain": true,
-                        },
-                        {
-                            "currency": "NGN",
-                            "currencyType": "some type",
-                            "amount": 800,
-                            "enabled": true,
-                            "name": "Ng Wallet",
-                            "icon": "ng-flag",
-                            "amountInBaseCurrency": 800,
-                            "isMain": false,
                         }
                     ],
                     "success": true
@@ -123,10 +113,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(wallets_response.data[0].currency, "UGX");
-        assert_eq!(wallets_response.data[0].amount_in_base_currency, 1000);
-
-        assert_eq!(wallets_response.data[1].currency, "NGN");
-        assert_eq!(wallets_response.data[1].amount_in_base_currency, 800);
-
+        assert_eq!(wallets_response.data[0].amount_in_base_currency, 500);
+        mock.assert();
     }
 }

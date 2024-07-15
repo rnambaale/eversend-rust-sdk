@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::{exchange::{types::Quotation, Exchange}, wallets::WalletId, ApiResponseBody, EversendError, EversendResult};
@@ -7,7 +7,7 @@ use crate::{exchange::{types::Quotation, Exchange}, wallets::WalletId, ApiRespon
 #[derive(Serialize)]
 pub struct CreateQuotationParams<'a> {
     /// Amount of source currency
-    pub amount: u32,
+    pub amount: String,
 
     /// Source currency from Get Wallets
     pub from: &'a WalletId,
@@ -24,6 +24,13 @@ impl From<CreateQuotationError> for EversendError<CreateQuotationError> {
     fn from(err: CreateQuotationError) -> Self {
         Self::Operation(err)
     }
+}
+
+#[derive(Deserialize)]
+pub struct CreateQuotationResponse {
+    pub expires: String,
+    pub token: String,
+    pub quotation: Quotation,
 }
 
 #[async_trait]
@@ -48,9 +55,9 @@ pub trait CreateQuotation {
     ///     let quotation = eversend
     ///         .exchange()
     ///         .create_quotation(&CreateQuotationParams{
-    ///             amount: 1000,
+    ///             amount: String::from("1000"),
     ///             from: &WalletId::from("UGX"),
-    ///             to: &WalletId::from("USD")
+    ///             to: &WalletId::from("KES")
     ///         })
     ///         .await?;
     ///
@@ -62,7 +69,7 @@ pub trait CreateQuotation {
     async fn create_quotation(
         &self,
         params: &CreateQuotationParams<'_>
-    ) -> EversendResult<Quotation, CreateQuotationError>;
+    ) -> EversendResult<CreateQuotationResponse, CreateQuotationError>;
 }
 
 #[async_trait]
@@ -70,7 +77,7 @@ impl<'a> CreateQuotation for Exchange<'a> {
     async fn create_quotation(
         &self,
         params: &CreateQuotationParams<'_>
-    ) -> EversendResult<Quotation, CreateQuotationError> {
+    ) -> EversendResult<CreateQuotationResponse, CreateQuotationError> {
         let url = format!("{}/exchanges/quotation", self.eversend.base_url());
 
         let response = self
@@ -81,7 +88,7 @@ impl<'a> CreateQuotation for Exchange<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<ApiResponseBody<Quotation>>()
+            .json::<ApiResponseBody<CreateQuotationResponse>>()
             .await?;
 
         Ok(response.data)
@@ -112,33 +119,43 @@ mod tests {
             .with_body(
                 json!({
                     "code": 200,
-                    "data": {
-                        "amount": 1000,
-                        "from": "UGX",
-                        "id": 1,
-                        "to": "USD",
-                        "token": "some-quotation-token"
+                    "data":{
+                        "expires":"2022-08-30T16:09:53+00:00",
+                        "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "quotation":{
+                            "baseCurrency":"UGX",
+                            "baseAmount":100,
+                            "baseWalletBefore":498.78,
+                            "baseWalletAfter":398.78,
+                            "destCurrency":"USD",
+                            "destAmount":0.025828573078999998,
+                            "destWalletBefore":1.52,
+                            "destWalletAfter":null,
+                            "rate":0.00025828573079
+                        }
                     },
                     "success": true
                 }).to_string(),
             )
             .create();
 
-        let quotation = eversend
+        let response = eversend
             .exchange()
             .create_quotation(
                 &CreateQuotationParams{
-                    amount: 1000,
+                    amount: String::from("1000"),
                     from: &WalletId::from("UGX"),
-                    to: &WalletId::from("UGX")
+                    to: &WalletId::from("KES")
                 }
             )
             .await
             .unwrap();
 
-        assert_eq!(quotation.amount, 1000);
-        assert_eq!(quotation.from, WalletId::from("UGX"));
-        assert_eq!(quotation.to, WalletId::from("USD"));
-        assert_eq!(quotation.token, String::from("some-quotation-token"));
+        assert_eq!(response.expires, String::from("2022-08-30T16:09:53+00:00"));
+        assert_eq!(response.token, String::from("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."));
+
+        assert_eq!(response.quotation.base_amount, 100);
+        assert_eq!(response.quotation.base_currency, WalletId::from("UGX"));
+        assert_eq!(response.quotation.dest_currency, WalletId::from("USD"));
     }
 }
