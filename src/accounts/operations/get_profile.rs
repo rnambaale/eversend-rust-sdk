@@ -89,16 +89,16 @@ mod tests {
                 json!({
                     "code": 200,
                     "data": {
-                        "id": 1,
-                        "name": "Raymond Red",
-                        "email": "raymond@company.com",
-                        "phone": "+256789123456",
-                        "address": "Kampala",
-                        "town": "Kyanja",
-                        "country": "Uganda",
-                        "logo": "https://some-company.com/logo.png",
-                        "website": "https://some-company.com",
-                        "isVerified": true,
+                        "id": 3,
+                        "name": "Eversend",
+                        "email": "frank@eversend.co",
+                        "phone": "256759429721",
+                        "address": "14-18 Cooper Road",
+                        "town": "Kampala",
+                        "country": "UG",
+                        "logo": null,
+                        "website": "http://eversend.co",
+                        "isVerified": true
                     },
                     "success": true
                 }).to_string(),
@@ -111,6 +111,6 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(account.name, "Raymond Red");
+        assert_eq!(account.name, "Eversend");
     }
 }
