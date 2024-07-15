@@ -14,7 +14,7 @@ pub struct Exchange {
 #[derive(Serialize, Deserialize)]
 pub struct ExchangeAccount {
     /// Amount for the account.
-    pub amount: u32,
+    pub amount: f64,
 
     /// Currency used by the account.
     pub currency: WalletId,

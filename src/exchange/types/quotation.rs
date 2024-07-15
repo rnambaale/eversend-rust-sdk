@@ -4,17 +4,29 @@ use crate::wallets::WalletId;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Quotation {
-    /// Amount of source currency
-    pub amount: u32,
+    #[serde(rename = "baseAmount")]
+    pub base_amount: u32,
 
-    /// Source currency from Get Wallets
-    pub from: WalletId,
+    #[serde(rename = "baseCurrency")]
+    pub base_currency: WalletId,
 
-    /// Destination currency from Get Wallets
-    pub to: WalletId,
+    #[serde(rename = "baseWalletAfter")]
+    pub base_wallet_after: f64,
 
-    /// Quotation token
-    pub token: String,
+    #[serde(rename = "baseWalletBefore")]
+    pub base_wallet_before: f64,
 
-    // TODO: Get actual quotation response attributes
+    #[serde(rename = "destAmount")]
+    pub dest_amount: f64,
+
+    #[serde(rename = "destCurrency")]
+    pub dest_currency: WalletId,
+
+    #[serde(rename = "destWalletAfter")]
+    pub dest_wallet_after: Option<f64>,
+
+    #[serde(rename = "destWalletBefore")]
+    pub dest_wallet_before: f64,
+
+    pub rate: f64,
 }

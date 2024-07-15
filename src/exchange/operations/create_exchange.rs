@@ -102,22 +102,22 @@ mod tests {
             .with_status(200)
             .with_body(
                 json!({
-                    "code": 200,
+                    "code": 201,
                     "data": {
                         "source": {
-                            "amount": 1000,
                             "currency": "UGX",
+                            "amount": 100,
                             "balance": {
-                                "before": "2000",
-                                "after": "2000"
+                                "before": "398.78",
+                                "after": "398.78"
                             }
                         },
                         "destination": {
-                            "amount": 10000,
-                            "currency": "USD",
+                            "currency": "KES",
+                            "amount": 3.1,
                             "balance": {
-                                "before": "2000",
-                                "after": "2000"
+                                "before": "1783.82",
+                                "after": "1783.82"
                             }
                         },
                     },
@@ -137,15 +137,15 @@ mod tests {
             .unwrap();
 
         // Source ...
-        assert_eq!(exchange.source.amount, 1000);
+        assert_eq!(exchange.source.amount, 100 as f64);
         assert_eq!(exchange.source.currency, WalletId::from("UGX"));
-        assert_eq!(exchange.source.balance.before, String::from("2000"));
-        assert_eq!(exchange.source.balance.after, String::from("2000"));
+        assert_eq!(exchange.source.balance.before, String::from("398.78"));
+        assert_eq!(exchange.source.balance.after, String::from("398.78"));
 
         // Destination ...
-        assert_eq!(exchange.destination.amount, 10000);
-        assert_eq!(exchange.destination.currency, WalletId::from("USD"));
-        assert_eq!(exchange.destination.balance.before, String::from("2000"));
-        assert_eq!(exchange.destination.balance.after, String::from("2000"));
+        assert_eq!(exchange.destination.amount, 3.1);
+        assert_eq!(exchange.destination.currency, WalletId::from("KES"));
+        assert_eq!(exchange.destination.balance.before, String::from("1783.82"));
+        assert_eq!(exchange.destination.balance.after, String::from("1783.82"));
     }
 }
