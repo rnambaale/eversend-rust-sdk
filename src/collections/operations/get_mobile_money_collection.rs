@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::Serialize;
 use thiserror::Error;
 
-use crate::{collections::{Collections, Customer, MobileMoneyCollection}, ApiResponseBody, EversendError, EversendResult};
+use crate::{collections::{Collections, MobileMoneyCollection}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
 pub struct Otp {
@@ -24,7 +24,7 @@ pub struct GetMobileMoneyCollectionParams {
     pub currency: String,
 
     /// An optional JSON object with customer information e.g. '{"email":"john@example.com"}'
-    pub customer: Option<Customer>,
+    pub customer: Option<serde_json::Value>,
 
     /// A JSON object with pinId from Get Collection OTP and pin from customer e.g {"pinId":"132466gdfsfsrey1535", "pin":"123456"}. NB: This is an optional field
     pub otp: Option<Otp>,
