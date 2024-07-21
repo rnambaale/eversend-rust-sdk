@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct MobileMoneyCollection {
@@ -15,7 +15,7 @@ pub struct MobileMoneyCollection {
 
     pub currency: String,
 
-    pub customer: Option<Customer>,
+    pub customer: Option<serde_json::Value>,
 
     pub status: String,
 
@@ -30,9 +30,4 @@ pub struct MobileMoneyCollection {
 
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Customer {
-    email: String,
 }
