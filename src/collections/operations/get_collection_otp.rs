@@ -7,7 +7,8 @@ use crate::{collections::Collections, ApiResponseBody, EversendError, EversendRe
 #[derive(Serialize)]
 pub struct GetCollectionOtpParams {
     /// Phone number in international format
-    pub phone: String,
+    #[serde(rename = "phone")]
+    pub phone_number: String,
 }
 
 /// An error returned from [`GetCollectionOtp`].
@@ -53,7 +54,7 @@ pub trait GetCollectionOtp {
     ///         .collections()
     ///         .get_collection_otp(
     ///             &GetCollectionOtpParams {
-    ///                 phone: String::from("+256712345678"),
+    ///                 phone_number: String::from("+256712345678"),
     ///             }
     ///         )
     ///         .await?;
@@ -127,7 +128,7 @@ mod tests {
             .collections()
             .get_collection_otp(
                 &GetCollectionOtpParams {
-                    phone: String::from("+256712345678"),
+                    phone_number: String::from("+256712345678"),
                 }
             )
             .await
