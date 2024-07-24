@@ -11,6 +11,7 @@ pub mod beneficiaries;
 pub mod collections;
 pub mod exchange;
 pub mod payouts;
+pub mod transactions;
 pub mod wallets;
 
 pub use crate::core::*;
