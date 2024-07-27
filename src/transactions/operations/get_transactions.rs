@@ -75,7 +75,7 @@ pub trait GetTransactions {
     ///         &String::from("sk_example_123456780")
     ///     );
     ///
-    ///     let otp = eversend
+    ///     let transactions = eversend
     ///         .transactions()
     ///         .get_transactions(
     ///             &GetTransactionsParams {
