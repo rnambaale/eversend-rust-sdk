@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Transaction {
 
     #[serde(rename = "accountId")]
@@ -82,7 +82,7 @@ pub struct Transaction {
     pub user_id: Option<u32>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub enum TransactionCurrencyOption {
     GHS,
     KES,
@@ -93,7 +93,7 @@ pub enum TransactionCurrencyOption {
     USD,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub enum TransactionTypeOption {
     #[serde(rename = "collection")]
     COLLECTION,
@@ -105,7 +105,7 @@ pub enum TransactionTypeOption {
     PAYOUT,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub enum TransactionStatusOption {
     #[serde(rename = "failed")]
     FAILED,
@@ -132,20 +132,20 @@ pub enum TransactionRangeOption {
     YEAR
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct TransactionMetaData {
     pub source: TransationAccount,
     pub destination: TransationAccount,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct TransationAccount {
     pub amount: f32,
     pub balance: AccountBalance,
     pub currency: TransactionCurrencyOption,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct AccountBalance {
     pub after: String,
     pub before: String,
