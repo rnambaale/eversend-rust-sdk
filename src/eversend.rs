@@ -1,4 +1,4 @@
-use crate::{accounts::Accounts, auth::Auth, beneficiaries::Beneficiaries, collections::Collections, core::{ApiToken, ClientId, EversendError, BASE_URL}, exchange::Exchange, payouts::Payouts, transactions::Transactions, wallets::Wallets};
+use crate::{accounts::Accounts, auth::Auth, beneficiaries::Beneficiaries, collections::Collections, core::{ApiToken, ClientId, EversendError, BASE_URL}, crypto::Crypto, exchange::Exchange, payouts::Payouts, transactions::Transactions, wallets::Wallets};
 
 /// The Eversend client.
 pub struct Eversend {
@@ -75,6 +75,11 @@ impl Eversend {
     /// Returns an [`Collections`] instance.
     pub fn collections(&self) -> Collections {
         Collections::new(self)
+    }
+
+    /// Returns an [`Crypto`] instance.
+    pub fn crypto(&self) -> Crypto {
+        Crypto::new(self)
     }
 
     /// Returns an [`Payouts`] instance.
