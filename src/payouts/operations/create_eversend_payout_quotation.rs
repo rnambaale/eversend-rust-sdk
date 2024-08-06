@@ -65,7 +65,7 @@ pub trait CreateEversendPayoutQuotation {
     ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
-    ///     let countries = eversend
+    ///     let _response = eversend
     ///         .payouts()
     ///         .create_eversend_payout_quotation(
     ///             &CreateEversendPayoutBodyParams {

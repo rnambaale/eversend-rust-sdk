@@ -26,11 +26,11 @@ eversend_rust_sdk = "0.1"
 
 ## Initialization
 ```rust
-use eversend_rust_sdk::{ClientId,Eversend};
+use eversend_rust_sdk::{ClientId,ClientSecret,Eversend};
 
 let eversend_client = Eversend::new(
     &ClientId::from("clientId"),
-    &String::from("clientSecret")
+    &ClientSecret::from("clientSecret")
 );
 ```
 
@@ -196,4 +196,61 @@ let response = eversend_client
 ```
 
 ### Collections
-...
+
+**Get collection fees**
+```rust
+use eversend_rust_sdk::collections::{GetCollectionFeesParams, CollectionMethod};
+
+let fees = eversend_client
+    .collections()
+    .get_collection_fees(
+        &GetCollectionFeesParams {
+            method: CollectionMethod::MOMO,
+            currency: String::from("KES"),
+            amount: 1000
+        }
+    )
+    .await?;
+```
+
+**Get collection OTP**
+
+>Required when initiating mobile money collections
+
+```rust
+use eversend_rust_sdk::collections::GetCollectionOtpParams;
+
+let otp = eversend_client
+    .collections()
+    .get_collection_otp(
+        &GetCollectionOtpParams {
+            phone_number: String::from("+256712345678"),
+        }
+    )
+    .await?;
+```
+
+**Initiate Mobile Money collection**
+
+```rust
+use eversend_rust_sdk::collections::GetMobileMoneyCollectionParams;
+
+let collection = eversend_client
+    .collections()
+    .get_mobile_money_collection(
+        &GetMobileMoneyCollectionParams {
+            amount: 1000,
+            country: String::from("UG"),
+            currency: String::from("UGX"),
+            phone_number: String::from("+256712345678"),
+            transaction_ref: Some(String::from("ADR234526534")),
+            redirect_url: Some(String::from("https://eversend.co")),
+            customer: None,
+            otp: None,
+        }
+    )
+    .await?;
+```
+
+## Contributing
+Contributions are welcome. For more info please read the [Contribution Guideline](CONTRIBUTING.md).
