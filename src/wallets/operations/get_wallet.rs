@@ -30,12 +30,12 @@ pub trait GetWallet {
     /// ```
     /// # use eversend_rust_sdk::EversendResult;
     /// # use eversend_rust_sdk::wallets::*;
-    /// use eversend_rust_sdk::{ClientId,Eversend};
+    /// use eversend_rust_sdk::{ClientId,ClientSecret,Eversend};
     ///
     /// # async fn run() -> EversendResult<(), GetWalletError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
-    ///         &String::from("sk_example_123456780")
+    ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
     ///     let wallet = eversend
@@ -77,7 +77,7 @@ impl<'a> GetWallet for Wallets<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{core::ClientId, eversend::Eversend, ApiToken};
+    use crate::{ClientId, eversend::Eversend, ApiToken, ClientSecret};
 
     use super::*;
     use mockito::{self, mock};
@@ -88,7 +88,7 @@ mod tests {
     async fn it_calls_the_get_wallet_endpoint() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_example_123456789"),
-            &String::from("sk_example_123456780")
+            &ClientSecret::from("sk_example_123456780")
         )
             .set_base_url(&mockito::server_url())
             .set_api_token(&ApiToken::from("some_test_token"))

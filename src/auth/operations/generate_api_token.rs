@@ -25,12 +25,12 @@ pub trait GenerateApiToken {
     /// ```
     /// # use eversend_rust_sdk::EversendResult;
     /// # use eversend_rust_sdk::auth::*;
-    /// use eversend_rust_sdk::{ClientId,Eversend};
+    /// use eversend_rust_sdk::{ClientId,ClientSecret,Eversend};
     ///
     /// # async fn run() -> EversendResult<(), GenerateApiTokenError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
-    ///         &String::from("sk_example_123456780")
+    ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
     ///     let api_token = eversend
@@ -58,7 +58,7 @@ impl<'a> GenerateApiToken for Auth<'a> {
             .client()
             .get(url)
             .header("clientId", self.eversend.client_id().to_string())
-            .header("clientSecret", self.eversend.client_secret())
+            .header("clientSecret", self.eversend.client_secret().to_string())
             .send()
             .await?
             .json::<ApiTokenResponse>()
@@ -76,7 +76,7 @@ struct ApiTokenResponse {
 
 #[cfg(test)]
 mod tests {
-    use crate::{core::ClientId, eversend::Eversend};
+    use crate::{ClientId, eversend::Eversend, ClientSecret};
 
     use super::*;
     use mockito::{self, mock};
@@ -87,7 +87,7 @@ mod tests {
     async fn it_calls_the_token_generation_endpoint() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_example_123456789"),
-            &String::from("sk_example_123456780")
+            &ClientSecret::from("sk_example_123456780")
         )
             .set_base_url(&mockito::server_url())
             .build();

@@ -37,13 +37,13 @@ pub trait DeactivateWallet {
     /// ```
     /// # use eversend_rust_sdk::EversendResult;
     /// # use eversend_rust_sdk::wallets::*;
-    /// use eversend_rust_sdk::{ClientId,Eversend};
+    /// use eversend_rust_sdk::{ClientId,ClientSecret,Eversend};
     /// use eversend_rust_sdk::wallets::WalletId;
     ///
     /// # async fn run() -> EversendResult<(), DeactivateWalletError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
-    ///         &String::from("sk_example_123456780")
+    ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
     ///     let wallet = eversend
@@ -89,7 +89,7 @@ impl<'a> DeactivateWallet for Wallets<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{core::ClientId, eversend::Eversend, ApiToken};
+    use crate::{ClientId, eversend::Eversend, ApiToken, ClientSecret};
 
     use super::*;
     use mockito::{self, mock};
@@ -100,7 +100,7 @@ mod tests {
     async fn it_calls_the_activate_wallet_endpoint() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_example_123456789"),
-            &String::from("sk_example_123456780")
+            &ClientSecret::from("sk_example_123456780")
         )
             .set_base_url(&mockito::server_url())
             .set_api_token(&ApiToken::from("some_test_token"))

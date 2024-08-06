@@ -1,4 +1,4 @@
-use crate::{accounts::Accounts, auth::Auth, beneficiaries::Beneficiaries, collections::Collections, core::{ApiToken, ClientId, EversendError, BASE_URL}, crypto::Crypto, exchange::Exchange, payouts::Payouts, transactions::Transactions, wallets::Wallets};
+use crate::{accounts::Accounts, auth::Auth, beneficiaries::Beneficiaries, collections::Collections, core::{ApiToken, ClientId, EversendError, BASE_URL}, crypto::Crypto, exchange::Exchange, payouts::Payouts, transactions::Transactions, wallets::Wallets, ClientSecret};
 
 /// The Eversend client.
 pub struct Eversend {
@@ -6,12 +6,12 @@ pub struct Eversend {
     base_url: String,
     client: reqwest::Client,
     client_id: ClientId,
-    client_secret: String, // TODO: Create custom type for this
+    client_secret: ClientSecret,
 }
 
 impl Eversend {
     /// Returns a new instance of the Eversend client using the provided API client ID, and Secret.
-    pub fn new(client_id: &ClientId, client_secret: &str) -> Self {
+    pub fn new(client_id: &ClientId, client_secret: &ClientSecret) -> Self {
         EversendBuilder::new(
             client_id,
             client_secret
@@ -19,7 +19,7 @@ impl Eversend {
     }
 
     /// Returns a [`EversendBuilder`] that may be used to construct an Eversend client.
-    pub fn builder<'a>(client_id: &'a ClientId, client_secret: &'a str) -> EversendBuilder<'a> {
+    pub fn builder<'a>(client_id: &'a ClientId, client_secret: &'a ClientSecret) -> EversendBuilder<'a> {
         EversendBuilder::new(client_id, client_secret)
     }
 
@@ -27,8 +27,8 @@ impl Eversend {
         &self.base_url.as_str()
     }
 
-    pub fn client_secret(&self) -> &str {
-        &self.client_secret.as_str()
+    pub fn client_secret(&self) -> &ClientSecret {
+        &self.client_secret
     }
 
     pub fn client_id(&self) -> &ClientId {
@@ -98,12 +98,12 @@ pub struct EversendBuilder<'a> {
     api_token: Option<ApiToken>,
     base_url: String,
     client_id: &'a ClientId,
-    client_secret: &'a str,
+    client_secret: &'a ClientSecret,
 }
 
 impl<'a> EversendBuilder<'a> {
     /// Returns a new [`EversendBuilder`] using the provided API client ID, and Secret.
-    pub fn new(client_id: &'a ClientId, client_secret: &'a str) -> Self {
+    pub fn new(client_id: &'a ClientId, client_secret: &'a ClientSecret) -> Self {
         Self {
             api_token: None,
             base_url: BASE_URL.to_string(),
@@ -135,7 +135,7 @@ impl<'a> EversendBuilder<'a> {
     }
 
     /// Sets the client secret of the Eversend API that the client should point to.
-    pub fn set_client_secret(mut self, client_secret: &'a str) -> EversendBuilder {
+    pub fn set_client_secret(mut self, client_secret: &'a ClientSecret) -> EversendBuilder {
         self.client_secret = client_secret;
         self
     }
@@ -162,7 +162,7 @@ mod test {
     fn it_supports_setting_the_base_url_through_the_builder() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_example_123456789"),
-            &String::from("sk_example_123456781")
+            &ClientSecret::from("sk_example_123456781")
         )
             .set_base_url("https://auth.your-app.com")
             .build();
@@ -177,19 +177,19 @@ mod test {
     fn it_supports_setting_the_secret_through_the_builder() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_some_client_id"),
-            &String::from("sk_some_client_secret")
+            &ClientSecret::from("sk_some_client_secret")
         )
-            .set_client_secret(&String::from("sk_another_client_secret"))
+            .set_client_secret(&ClientSecret::from("sk_another_client_secret"))
             .build();
 
-        assert_eq!(eversend.client_secret(), &String::from("sk_another_client_secret"))
+        assert_eq!(eversend.client_secret(), &ClientSecret::from("sk_another_client_secret"))
     }
 
     #[test]
     fn it_supports_setting_the_client_id_through_the_builder() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_some_client_id"),
-            &String::from("sk_some_client_secret")
+            &ClientSecret::from("sk_some_client_secret")
         )
             .set_client_id(&ClientId::from("sk_another_client_id"))
             .build();

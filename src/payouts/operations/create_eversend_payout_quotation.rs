@@ -57,12 +57,12 @@ pub trait CreateEversendPayoutQuotation {
     /// ```
     /// # use eversend_rust_sdk::EversendResult;
     /// # use eversend_rust_sdk::payouts::*;
-    /// use eversend_rust_sdk::{ClientId,Eversend};
+    /// use eversend_rust_sdk::{ClientId,ClientSecret,Eversend};
     ///
     /// # async fn run() -> EversendResult<(), CreateEversendPayoutQuotationError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
-    ///         &String::from("sk_example_123456780")
+    ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
     ///     let countries = eversend
@@ -115,7 +115,7 @@ impl<'a> CreateEversendPayoutQuotation for Payouts<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{core::ClientId, eversend::Eversend, ApiToken};
+    use crate::{ClientId, eversend::Eversend, ApiToken, ClientSecret};
 
     use super::*;
     use mockito::{self, mock};
@@ -126,7 +126,7 @@ mod tests {
     async fn it_calls_the_create_quotation_endpoint() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_example_123456789"),
-            &String::from("sk_example_123456780")
+            &ClientSecret::from("sk_example_123456780")
         )
             .set_base_url(&mockito::server_url())
             .set_api_token(&ApiToken::from("some_test_token"))

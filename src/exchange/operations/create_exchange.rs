@@ -30,13 +30,13 @@ pub trait CreateExchange {
     /// ```
     /// # use eversend_rust_sdk::EversendResult;
     /// # use eversend_rust_sdk::exchange::*;
-    /// use eversend_rust_sdk::{ClientId,Eversend};
+    /// use eversend_rust_sdk::{ClientId,ClientSecret,Eversend};
     /// use eversend_rust_sdk::wallets::WalletId;
     ///
     /// # async fn run() -> EversendResult<(), CreateExchangeError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
-    ///         &String::from("sk_example_123456780")
+    ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
     ///     let exchange = eversend
@@ -81,7 +81,7 @@ impl<'a> CreateExchange for Exchange<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{core::ClientId, eversend::Eversend, wallets::WalletId, ApiToken};
+    use crate::{ClientId, eversend::Eversend, wallets::WalletId, ApiToken, ClientSecret};
 
     use super::*;
     use mockito::{self, mock};
@@ -92,7 +92,7 @@ mod tests {
     async fn it_calls_the_create_echange_endpoint() {
         let eversend = Eversend::builder(
             &ClientId::from("sk_example_123456789"),
-            &String::from("sk_example_123456780")
+            &ClientSecret::from("sk_example_123456780")
         )
             .set_base_url(&mockito::server_url())
             .set_api_token(&ApiToken::from("some_test_token"))
