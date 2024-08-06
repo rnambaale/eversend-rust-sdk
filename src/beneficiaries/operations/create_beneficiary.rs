@@ -141,8 +141,20 @@ mod tests {
             .set_api_token(&ApiToken::from("some_test_token"))
             .build();
 
+        let params = &CreateBeneficaryParams {
+            first_name: String::from("Jane"),
+            last_name: String::from("Doe"),
+            country: String::from("KE"),
+            phone_number: String::from("+254781650002"),
+            bank_account_name: Some(String::from("Stanbic Bank")),
+            bank_account_number: Some(String::from("28776353527287")),
+            is_bank: true,
+            is_momo: true,
+        };
+
         let mock = mock("POST", "/beneficiaries")
             .with_status(200)
+            .match_body(mockito::Matcher::Json(json!(vec![params])))
             .with_body(
                 json!({
                     "code": 200,
@@ -153,18 +165,7 @@ mod tests {
 
         eversend
             .beneficiaries()
-            .create_beneficiary(
-                &CreateBeneficaryParams {
-                    first_name: String::from("Jane"),
-                    last_name: String::from("Doe"),
-                    country: String::from("KE"),
-                    phone_number: String::from("+254781650002"),
-                    bank_account_name: Some(String::from("Stanbic Bank")),
-                    bank_account_number: Some(String::from("28776353527287")),
-                    is_bank: true,
-                    is_momo: true,
-                }
-            )
+            .create_beneficiary(&params)
             .await
             .unwrap();
 
