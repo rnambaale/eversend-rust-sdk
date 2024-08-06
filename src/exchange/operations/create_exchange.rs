@@ -7,7 +7,7 @@ use crate::{exchange::{types::Exchange as ExchangeResult, Exchange}, ApiResponse
 #[derive(Serialize)]
 pub struct CreateExchangeParams {
     /// Token from Create Quotation
-    pub token: String
+    pub quotation_token: String
 }
 
 /// An error returned from [`CreateExchange`].
@@ -42,7 +42,7 @@ pub trait CreateExchange {
     ///     let exchange = eversend
     ///         .exchange()
     ///         .create_exchange(&CreateExchangeParams{
-    ///             token: String::from("some-test-token")
+    ///             quotation_token: String::from("some-test-quotation-token")
     ///         })
     ///         .await?;
     ///
@@ -130,7 +130,7 @@ mod tests {
             .exchange()
             .create_exchange(
                 &CreateExchangeParams{
-                    token: String::from("some-test-token"),
+                    quotation_token: String::from("some-test-token"),
                 }
             )
             .await

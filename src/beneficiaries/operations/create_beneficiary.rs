@@ -5,7 +5,7 @@ use thiserror::Error;
 use crate::{beneficiaries::Beneficiaries, EversendError, EversendResult};
 
 #[derive(Serialize)]
-pub struct CreateBeneficaryParamItem {
+pub struct CreateBeneficaryParams {
     /// The first name.
     #[serde(rename = "firstName")]
     pub first_name: String,
@@ -38,28 +38,28 @@ pub struct CreateBeneficaryParamItem {
     pub bank_account_number: Option<String>,
 }
 
-/// An error returned from [`CreateBeneficiaries`].
+/// An error returned from [`CreateBeneficiary`].
 #[derive(Debug, Error)]
-pub enum CreateBeneficiariesError {}
+pub enum CreateBeneficiaryError {}
 
-impl From<CreateBeneficiariesError> for EversendError<CreateBeneficiariesError> {
-    fn from(err: CreateBeneficiariesError) -> Self {
+impl From<CreateBeneficiaryError> for EversendError<CreateBeneficiaryError> {
+    fn from(err: CreateBeneficiaryError) -> Self {
         Self::Operation(err)
     }
 }
 
 #[derive(Deserialize)]
-pub struct CreateBeneficiariesApiResponse {
+pub struct CreateBeneficiaryApiResponse {
     pub code: u16,
     pub success: bool
 }
 
-/// [Eversend Docs: Create Beneficiaries](https://eversend.readme.io/reference/create-beneficiaries)
+/// [Eversend Docs: Create Beneficiary](https://eversend.readme.io/reference/create-beneficiaries)
 #[async_trait]
-pub trait CreateBeneficiaries {
-    /// Create [`Beneficiary`]s.
+pub trait CreateBeneficiary {
+    /// Create a [`Beneficiary`].
     ///
-    /// [Eversend Docs: Create Beneficiaries](https://eversend.readme.io/reference/create-beneficiaries)
+    /// [Eversend Docs: Create Beneficiary](https://eversend.readme.io/reference/create-beneficiaries)
     ///
     /// # Examples
     /// ```
@@ -67,7 +67,7 @@ pub trait CreateBeneficiaries {
     /// # use eversend_rust_sdk::beneficiaries::*;
     /// use eversend_rust_sdk::{ClientId,ClientSecret,Eversend};
     ///
-    /// # async fn run() -> EversendResult<(), CreateBeneficiariesError> {
+    /// # async fn run() -> EversendResult<(), CreateBeneficiaryError> {
     ///     let eversend = Eversend::new(
     ///         &ClientId::from("sk_example_123456789"),
     ///         &ClientSecret::from("sk_example_123456780")
@@ -75,18 +75,8 @@ pub trait CreateBeneficiaries {
     ///
     ///     let _response = eversend
     ///         .beneficiaries()
-    ///         .create_beneficiaries(vec![
-    ///             &CreateBeneficaryParamItem {
-    ///                 first_name: String::from("Frank"),
-    ///                 last_name: String::from("Odongkara"),
-    ///                 country: String::from("UG"),
-    ///                 phone_number: String::from("+256781650001"),
-    ///                 bank_account_name: None,
-    ///                 bank_account_number: None,
-    ///                 is_bank: false,
-    ///                 is_momo: true,
-    ///             },
-    ///             &CreateBeneficaryParamItem {
+    ///         .create_beneficiary(
+    ///             &CreateBeneficaryParams {
     ///                 first_name: String::from("Jane"),
     ///                 last_name: String::from("Doe"),
     ///                 country: String::from("KE"),
@@ -96,27 +86,27 @@ pub trait CreateBeneficiaries {
     ///                 is_bank: true,
     ///                 is_momo: true,
     ///             }
-    ///         ])
+    ///         )
     ///         .await?;
     ///
     ///     Ok(())
     ///
     /// # }
     /// ```
-    async fn create_beneficiaries(
+    async fn create_beneficiary(
         &self,
-        params: Vec<&CreateBeneficaryParamItem>
-    ) -> EversendResult<(), CreateBeneficiariesError>;
+        params: &CreateBeneficaryParams
+    ) -> EversendResult<(), CreateBeneficiaryError>;
 }
 
 #[async_trait]
-impl<'a> CreateBeneficiaries for Beneficiaries<'a> {
-    async fn create_beneficiaries(
+impl<'a> CreateBeneficiary for Beneficiaries<'a> {
+    async fn create_beneficiary(
         &self,
-        params: Vec<&CreateBeneficaryParamItem>
-    ) -> EversendResult<(), CreateBeneficiariesError> {
+        params: &CreateBeneficaryParams
+    ) -> EversendResult<(), CreateBeneficiaryError> {
         let url = format!("{}/beneficiaries", self.eversend.base_url());
-
+        let params = vec![params];
         let _response = self
             .eversend
             .client()
@@ -125,7 +115,7 @@ impl<'a> CreateBeneficiaries for Beneficiaries<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
-            .json::<CreateBeneficiariesApiResponse>()
+            .json::<CreateBeneficiaryApiResponse>()
             .await?;
 
         Ok(())
@@ -161,36 +151,20 @@ mod tests {
             )
             .create();
 
-        let beneficiary_one = CreateBeneficaryParamItem {
-            first_name: String::from("Frank"),
-            last_name: String::from("Odongkara"),
-            country: String::from("UG"),
-            phone_number: String::from("+256781650001"),
-            bank_account_name: None,
-            bank_account_number: None,
-            is_bank: false,
-            is_momo: true,
-        };
-
-        let beneficiary_two = CreateBeneficaryParamItem {
-            first_name: String::from("Jane"),
-            last_name: String::from("Doe"),
-            country: String::from("KE"),
-            phone_number: String::from("+254781650002"),
-            bank_account_name: Some(String::from("Stanbic Bank")),
-            bank_account_number: Some(String::from("28776353527287")),
-            is_bank: true,
-            is_momo: true,
-        };
-
-        let params = vec![
-            &beneficiary_one,
-            &beneficiary_two,
-        ];
-
         eversend
             .beneficiaries()
-            .create_beneficiaries(params)
+            .create_beneficiary(
+                &CreateBeneficaryParams {
+                    first_name: String::from("Jane"),
+                    last_name: String::from("Doe"),
+                    country: String::from("KE"),
+                    phone_number: String::from("+254781650002"),
+                    bank_account_name: Some(String::from("Stanbic Bank")),
+                    bank_account_number: Some(String::from("28776353527287")),
+                    is_bank: true,
+                    is_momo: true,
+                }
+            )
             .await
             .unwrap();
 
