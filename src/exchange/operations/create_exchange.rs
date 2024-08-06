@@ -42,7 +42,7 @@ pub trait CreateExchange {
     ///     let exchange = eversend
     ///         .exchange()
     ///         .create_exchange(&CreateExchangeParams{
-    ///             token: String::from("some-test-token")
+    ///             quotation_token: String::from("some-test-quotation-token")
     ///         })
     ///         .await?;
     ///

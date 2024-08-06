@@ -75,18 +75,8 @@ pub trait CreateBeneficiaries {
     ///
     ///     let _response = eversend
     ///         .beneficiaries()
-    ///         .create_beneficiaries(vec![
-    ///             &CreateBeneficaryParamItem {
-    ///                 first_name: String::from("Frank"),
-    ///                 last_name: String::from("Odongkara"),
-    ///                 country: String::from("UG"),
-    ///                 phone_number: String::from("+256781650001"),
-    ///                 bank_account_name: None,
-    ///                 bank_account_number: None,
-    ///                 is_bank: false,
-    ///                 is_momo: true,
-    ///             },
-    ///             &CreateBeneficaryParamItem {
+    ///         .create_beneficiary(
+    ///             &CreateBeneficaryParams {
     ///                 first_name: String::from("Jane"),
     ///                 last_name: String::from("Doe"),
     ///                 country: String::from("KE"),
@@ -96,24 +86,24 @@ pub trait CreateBeneficiaries {
     ///                 is_bank: true,
     ///                 is_momo: true,
     ///             }
-    ///         ])
+    ///         )
     ///         .await?;
     ///
     ///     Ok(())
     ///
     /// # }
     /// ```
-    async fn create_beneficiaries(
+    async fn create_beneficiary(
         &self,
-        params: Vec<&CreateBeneficaryParamItem>
+        params: &CreateBeneficaryParamItem
     ) -> EversendResult<(), CreateBeneficiariesError>;
 }
 
 #[async_trait]
 impl<'a> CreateBeneficiaries for Beneficiaries<'a> {
-    async fn create_beneficiaries(
+    async fn create_beneficiary(
         &self,
-        params: Vec<&CreateBeneficaryParamItem>
+        params: &CreateBeneficaryParamItem
     ) -> EversendResult<(), CreateBeneficiariesError> {
         let url = format!("{}/beneficiaries", self.eversend.base_url());
 
@@ -161,18 +151,7 @@ mod tests {
             )
             .create();
 
-        let beneficiary_one = CreateBeneficaryParamItem {
-            first_name: String::from("Frank"),
-            last_name: String::from("Odongkara"),
-            country: String::from("UG"),
-            phone_number: String::from("+256781650001"),
-            bank_account_name: None,
-            bank_account_number: None,
-            is_bank: false,
-            is_momo: true,
-        };
-
-        let beneficiary_two = CreateBeneficaryParamItem {
+        let beneficiary = CreateBeneficaryParamItem {
             first_name: String::from("Jane"),
             last_name: String::from("Doe"),
             country: String::from("KE"),
@@ -183,14 +162,9 @@ mod tests {
             is_momo: true,
         };
 
-        let params = vec![
-            &beneficiary_one,
-            &beneficiary_two,
-        ];
-
         eversend
             .beneficiaries()
-            .create_beneficiaries(params)
+            .create_beneficiary(&beneficiary)
             .await
             .unwrap();
 
