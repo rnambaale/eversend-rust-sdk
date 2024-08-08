@@ -5,7 +5,7 @@ use thiserror::Error;
 use crate::{payouts::{Payouts, Quotation}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
-pub struct CreateQuotationBodyParams {
+pub struct CreateMomoAndBankPayoutQuotationParams {
     /// Source amount to pay
     pub amount: u32,
 
@@ -65,10 +65,10 @@ pub trait CreateMomoAndBankPayoutQuotation {
     ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
-    ///     let countries = eversend
+    ///     let quotation = eversend
     ///         .payouts()
     ///         .create_momo_and_bank_payout_quotation(
-    ///             &CreateQuotationBodyParams {
+    ///             &CreateMomoAndBankPayoutQuotationParams {
     ///                 amount: 20,
     ///                 amount_type: String::from("SOURCE"),
     ///                 destination_country: String::from("KE"),
@@ -85,7 +85,7 @@ pub trait CreateMomoAndBankPayoutQuotation {
     /// ```
     async fn create_momo_and_bank_payout_quotation(
         &self,
-        params: &CreateQuotationBodyParams
+        params: &CreateMomoAndBankPayoutQuotationParams
     ) -> EversendResult<CreateQuotationResponse, CreateMomoAndBankPayoutQuotationError>;
 }
 
@@ -93,7 +93,7 @@ pub trait CreateMomoAndBankPayoutQuotation {
 impl<'a> CreateMomoAndBankPayoutQuotation for Payouts<'a> {
     async fn create_momo_and_bank_payout_quotation(
         &self,
-        params: &CreateQuotationBodyParams
+        params: &CreateMomoAndBankPayoutQuotationParams
     ) -> EversendResult<CreateQuotationResponse, CreateMomoAndBankPayoutQuotationError> {
         let url = format!("{}/payouts/quotation", self.eversend.base_url());
 
@@ -161,7 +161,7 @@ mod tests {
         let response = eversend
             .payouts()
             .create_momo_and_bank_payout_quotation(
-                &CreateQuotationBodyParams {
+                &CreateMomoAndBankPayoutQuotationParams {
                     amount: 20,
                     amount_type: String::from("SOURCE"),
                     destination_country: String::from("KE"),

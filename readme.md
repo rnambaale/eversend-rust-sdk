@@ -252,5 +252,63 @@ let collection = eversend_client
     .await?;
 ```
 
+### Payouts
+
+**Get delivery countries**
+```rust
+let countries = eversend_client
+    .payouts()
+    .get_delivery_countries()
+    .await?;
+```
+
+**Get delivery banks**
+```rust
+let banks = eversend
+    .payouts()
+    .get_delivery_banks(String::from("UG"))
+    .await?;
+
+```
+
+**Get payout quotation (Momo and Bank)**
+
+```rust
+use eversend_rust_sdk::payouts::CreateMomoAndBankPayoutQuotationParams;
+
+let quotation = eversend_client
+    .payouts()
+    .create_momo_and_bank_payout_quotation(
+        &CreateMomoAndBankPayoutQuotationParams {
+            amount: 20,
+            amount_type: String::from("SOURCE"),
+            destination_country: String::from("KE"),
+            destination_currency: String::from("KES"),
+            source_wallet: String::from("KES"),
+            transaction_type: String::from("momo"),
+        }
+    )
+    .await?;
+```
+
+**Get payout quotation (Eversend)**
+```rs
+use eversend_rust_sdk::payouts::CreateEversendPayoutQuotationParams;
+
+let quotation = eversend_client
+    .payouts()
+    .create_eversend_payout_quotation(
+        &CreateEversendPayoutQuotationParams {
+            amount: 20,
+            amount_type: String::from("SOURCE"),
+            email: String::from("satowind@gmail.com"),
+            identifier: String::from("email"),
+            phone: String::from("+256789123456"),
+            source_wallet: String::from("KES"),
+            tag: String::from("the-tag"),
+        }
+    )
+    .await?;
+```
 ## Contributing
 Contributions are welcome. For more info please read the [Contribution Guideline](CONTRIBUTING.md).
