@@ -264,7 +264,7 @@ let countries = eversend_client
 
 **Get delivery banks**
 ```rust
-let banks = eversend
+let banks = eversend_client
     .payouts()
     .get_delivery_banks(String::from("UG"))
     .await?;
@@ -310,5 +310,80 @@ let quotation = eversend_client
     )
     .await?;
 ```
+
+**Create Momo payout transaction**
+
+```rust
+use eversend_rust_sdk::payouts::CreateMomoPayoutTransactionParams;
+
+let transaction = eversend_client
+    .payouts()
+    .create_momo_payout_transaction(
+        &CreateMomoPayoutTransactionParams {
+            country: String::from("UG"),
+            first_name: String::from("John"),
+            last_name: String::from("Doe"),
+            phone_number: String::from("+256789123456"),
+            token: String::from("some-token"),
+            transaction_ref: String::from("some-reference")
+        }
+    )
+    .await?;
+```
+
+**Create Bank payout transaction**
+```rust
+use eversend_rust_sdk::payouts::CreateBankPayoutTransactionParams;
+
+let transaction = eversend_client
+    .payouts()
+    .create_bank_payout_transaction(
+        &CreateBankPayoutTransactionParams {
+            country: String::from("UG"),
+            first_name: String::from("John"),
+            last_name: String::from("Doe"),
+            phone_number: String::from("+256789123456"),
+            token: String::from("some-token"),
+            transaction_ref: String::from("some-reference"),
+            bank_account_name: String::from("John Doe"),
+            bank_account_number: String::from("12345"),
+            bank_code: String::from("1234"),
+            bank_name: String::from("World Bank"),
+        }
+    )
+    .await?;
+```
+
+**Create Beneficiary payout transaction**
+
+```rust
+use eversend_rust_sdk::payouts::CreateBeneficiaryPayoutTransactionParams;
+
+let transaction = eversend_client
+    .payouts()
+    .create_beneficiary_payout_transaction(
+        &CreateBeneficiaryPayoutTransactionParams {
+            token: String::from("some-token"),
+            beneficiary_id: String::from("123"),
+        }
+    )
+    .await?;
+```
+
+**Create Eversend payout transaction**
+```rust
+use eversend_rust_sdk::payouts::CreateEversendPayoutTransactionParams;
+
+let transaction = eversend_client
+    .payouts()
+    .create_eversend_payout_transaction(
+        &CreateEversendPayoutTransactionParams {
+            token: String::from("some-token"),
+            transaction_ref: String::from("some-reference"),
+        }
+    )
+    .await?;
+```
+
 ## Contributing
 Contributions are welcome. For more info please read the [Contribution Guideline](CONTRIBUTING.md).

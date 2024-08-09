@@ -5,7 +5,7 @@ use thiserror::Error;
 use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
-pub struct CreateBeneficiaryPayoutBodyParams {
+pub struct CreateBeneficiaryPayoutTransactionParams {
     /// Id of beneficiary you are sending to, you can get the beneficiary Id from the get beneficiary endpoint
     #[serde(rename = "beneficiaryId")]
     pub beneficiary_id: String,
@@ -51,7 +51,7 @@ pub trait CreateBeneficiaryPayoutTransaction {
     ///     let transaction = eversend
     ///         .payouts()
     ///         .create_beneficiary_payout_transaction(
-    ///             &CreateBeneficiaryPayoutBodyParams {
+    ///             &CreateBeneficiaryPayoutTransactionParams {
     ///                 token: String::from("some-token"),
     ///                 beneficiary_id: String::from("123"),
     ///             }
@@ -63,7 +63,7 @@ pub trait CreateBeneficiaryPayoutTransaction {
     /// ```
     async fn create_beneficiary_payout_transaction(
         &self,
-        params: &CreateBeneficiaryPayoutBodyParams
+        params: &CreateBeneficiaryPayoutTransactionParams
     ) -> EversendResult<Transaction, CreateBeneficiaryPayoutTransactionError>;
 }
 
@@ -71,7 +71,7 @@ pub trait CreateBeneficiaryPayoutTransaction {
 impl<'a> CreateBeneficiaryPayoutTransaction for Payouts<'a> {
     async fn create_beneficiary_payout_transaction(
         &self,
-        params: &CreateBeneficiaryPayoutBodyParams
+        params: &CreateBeneficiaryPayoutTransactionParams
     ) -> EversendResult<Transaction, CreateBeneficiaryPayoutTransactionError> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
@@ -155,7 +155,7 @@ mod tests {
         let transaction = eversend
             .payouts()
             .create_beneficiary_payout_transaction(
-                &CreateBeneficiaryPayoutBodyParams {
+                &CreateBeneficiaryPayoutTransactionParams {
                     token: String::from("some-token"),
                     beneficiary_id: String::from("123"),
                 }
