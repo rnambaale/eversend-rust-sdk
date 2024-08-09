@@ -5,7 +5,7 @@ use thiserror::Error;
 use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
-pub struct CreateEversendPayoutTransactionBodyParams {
+pub struct CreateEversendPayoutTransactionParams {
     /// JWT token from quotation
     pub token: String,
 
@@ -51,7 +51,7 @@ pub trait CreateEversendPayoutTransaction {
     ///     let transaction = eversend
     ///         .payouts()
     ///         .create_eversend_payout_transaction(
-    ///             &CreateEversendPayoutTransactionBodyParams {
+    ///             &CreateEversendPayoutTransactionParams {
     ///                 token: String::from("some-token"),
     ///                 transaction_ref: String::from("some-reference"),
     ///             }
@@ -64,7 +64,7 @@ pub trait CreateEversendPayoutTransaction {
     /// ```
     async fn create_eversend_payout_transaction(
         &self,
-        params: &CreateEversendPayoutTransactionBodyParams
+        params: &CreateEversendPayoutTransactionParams
     ) -> EversendResult<Transaction, CreateEversendPayoutTransactionError>;
 }
 
@@ -72,7 +72,7 @@ pub trait CreateEversendPayoutTransaction {
 impl<'a> CreateEversendPayoutTransaction for Payouts<'a> {
     async fn create_eversend_payout_transaction(
         &self,
-        params: &CreateEversendPayoutTransactionBodyParams
+        params: &CreateEversendPayoutTransactionParams
     ) -> EversendResult<Transaction, CreateEversendPayoutTransactionError> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
@@ -150,7 +150,7 @@ mod tests {
         let transaction = eversend
             .payouts()
             .create_eversend_payout_transaction(
-                &CreateEversendPayoutTransactionBodyParams {
+                &CreateEversendPayoutTransactionParams {
                     token: String::from("some-token"),
                     transaction_ref: String::from("some-reference"),
                 }

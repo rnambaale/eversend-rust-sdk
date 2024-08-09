@@ -5,7 +5,7 @@ use thiserror::Error;
 use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
-pub struct CreateBankPayoutTransactionBodyParams {
+pub struct CreateBankPayoutTransactionParams {
     /// Recipient bank account name
     #[serde(rename = "bankAccountName")]
     pub bank_account_name: String,
@@ -82,7 +82,7 @@ pub trait CreateBankPayoutTransaction {
     ///     let transaction = eversend
     ///         .payouts()
     ///         .create_bank_payout_transaction(
-    ///             &CreateBankPayoutTransactionBodyParams {
+    ///             &CreateBankPayoutTransactionParams {
     ///                 country: String::from("UG"),
     ///                 first_name: String::from("John"),
     ///                 last_name: String::from("Doe"),
@@ -103,7 +103,7 @@ pub trait CreateBankPayoutTransaction {
     /// ```
     async fn create_bank_payout_transaction(
         &self,
-        params: &CreateBankPayoutTransactionBodyParams
+        params: &CreateBankPayoutTransactionParams
     ) -> EversendResult<Transaction, CreateBankPayoutTransactionError>;
 }
 
@@ -111,7 +111,7 @@ pub trait CreateBankPayoutTransaction {
 impl<'a> CreateBankPayoutTransaction for Payouts<'a> {
     async fn create_bank_payout_transaction(
         &self,
-        params: &CreateBankPayoutTransactionBodyParams
+        params: &CreateBankPayoutTransactionParams
     ) -> EversendResult<Transaction, CreateBankPayoutTransactionError> {
         let url = format!("{}/payouts", self.eversend.base_url());
 
@@ -195,7 +195,7 @@ mod tests {
         let transaction = eversend
             .payouts()
             .create_bank_payout_transaction(
-                &CreateBankPayoutTransactionBodyParams {
+                &CreateBankPayoutTransactionParams {
                     country: String::from("UG"),
                     first_name: String::from("John"),
                     last_name: String::from("Doe"),

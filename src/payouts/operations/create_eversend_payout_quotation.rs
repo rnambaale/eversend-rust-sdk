@@ -5,7 +5,7 @@ use thiserror::Error;
 use crate::{payouts::{Payouts, Quotation}, ApiResponseBody, EversendError, EversendResult};
 
 #[derive(Serialize)]
-pub struct CreateEversendPayoutBodyParams {
+pub struct CreateEversendPayoutQuotationParams {
     /// Source amount to pay
     pub amount: u32,
 
@@ -65,10 +65,10 @@ pub trait CreateEversendPayoutQuotation {
     ///         &ClientSecret::from("sk_example_123456780")
     ///     );
     ///
-    ///     let _response = eversend
+    ///     let quotation = eversend
     ///         .payouts()
     ///         .create_eversend_payout_quotation(
-    ///             &CreateEversendPayoutBodyParams {
+    ///             &CreateEversendPayoutQuotationParams {
     ///                 amount: 20,
     ///                 amount_type: String::from("SOURCE"),
     ///                 email: String::from("satowind@gmail.com"),
@@ -86,7 +86,7 @@ pub trait CreateEversendPayoutQuotation {
     /// ```
     async fn create_eversend_payout_quotation(
         &self,
-        params: &CreateEversendPayoutBodyParams
+        params: &CreateEversendPayoutQuotationParams
     ) -> EversendResult<CreateEversendPayoutResponse, CreateEversendPayoutQuotationError>;
 }
 
@@ -94,7 +94,7 @@ pub trait CreateEversendPayoutQuotation {
 impl<'a> CreateEversendPayoutQuotation for Payouts<'a> {
     async fn create_eversend_payout_quotation(
         &self,
-        params: &CreateEversendPayoutBodyParams
+        params: &CreateEversendPayoutQuotationParams
     ) -> EversendResult<CreateEversendPayoutResponse, CreateEversendPayoutQuotationError> {
         let url = format!("{}/payouts/quotation", self.eversend.base_url());
 
@@ -177,7 +177,7 @@ mod tests {
         let response = eversend
             .payouts()
             .create_eversend_payout_quotation(
-                &CreateEversendPayoutBodyParams {
+                &CreateEversendPayoutQuotationParams {
                     amount: 20,
                     amount_type: String::from("SOURCE"),
                     email: String::from("satowind@gmail.com"),
