@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{transactions::{Transaction, TransactionCurrencyOption, TransactionStatusOption, Transactions, TransactionRangeOption, TransactionTypeOption}, ApiResponseBody, EversendError, EversendResult};
+use crate::{transactions::{Transaction, TransactionCurrencyOption, TransactionRangeOption, TransactionStatusOption, TransactionTypeOption, Transactions}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Serialize)]
 pub struct GetTransactionsParams {
@@ -118,6 +118,7 @@ impl<'a> GetTransactions for Transactions<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<GetTransactionsResponse>>()
             .await?;
 

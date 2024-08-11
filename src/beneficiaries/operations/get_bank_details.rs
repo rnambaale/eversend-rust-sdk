@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::Serialize;
 use thiserror::Error;
 
-use crate::{beneficiaries::{BankDetails, Beneficiaries}, ApiResponseBody, EversendError, EversendResult};
+use crate::{beneficiaries::{BankDetails, Beneficiaries}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Serialize)]
 pub struct GetBankDetailsParams {
@@ -85,6 +85,7 @@ impl<'a> GetBankDetails for Beneficiaries<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<BankDetails>>()
             .await?;
 

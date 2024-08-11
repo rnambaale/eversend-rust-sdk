@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::{beneficiaries::{Beneficiaries, Beneficiary}, ApiResponseBody, EversendError, EversendResult};
+use crate::{beneficiaries::{Beneficiaries, Beneficiary}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Deserialize)]
 struct GetBeneficaryApiResponse {
@@ -71,6 +71,7 @@ impl<'a> GetBeneficiary for Beneficiaries<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<GetBeneficaryApiResponse>>()
             .await?;
 

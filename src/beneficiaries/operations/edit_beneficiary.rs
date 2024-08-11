@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{beneficiaries::Beneficiaries, EversendError, EversendResult};
+use crate::{beneficiaries::Beneficiaries, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Deserialize, Serialize)]
 pub struct EditBeneficiaryParams {
@@ -114,6 +114,7 @@ impl<'a> EditBeneficiary for Beneficiaries<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<EditBeneficiaryResponse>()
             .await?;
         Ok(())
