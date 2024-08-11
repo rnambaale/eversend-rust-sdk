@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::{crypto::{Crypto, CryptoAddress}, ApiResponseBody, EversendError, EversendResult};
+use crate::{crypto::{Crypto, CryptoAddress}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 /// An error returned from [`FetchCryptoAddresses`].
 #[derive(Debug, Error)]
@@ -66,6 +66,7 @@ impl<'a> FetchCryptoAddresses for Crypto<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<FetchCryptoAddressesResponse>>()
             .await?;
 

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody, EversendError, EversendResult};
+use crate::{wallets::{Wallet, WalletId, Wallets}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 /// The parameters for [`ActivateWallet`].
 #[derive(Debug, Serialize)]
@@ -79,6 +79,7 @@ impl<'a> ActivateWallet for Wallets<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<WalletResponseData>>()
             .await?;
 

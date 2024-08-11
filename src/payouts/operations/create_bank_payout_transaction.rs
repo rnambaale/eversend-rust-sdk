@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult};
+use crate::{payouts::{Payouts, Transaction}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Serialize)]
 pub struct CreateBankPayoutTransactionParams {
@@ -123,6 +123,7 @@ impl<'a> CreateBankPayoutTransaction for Payouts<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<CreateBankPayoutResponse>>()
             .await?;
 

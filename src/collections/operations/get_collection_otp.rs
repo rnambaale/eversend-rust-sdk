@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{collections::Collections, ApiResponseBody, EversendError, EversendResult};
+use crate::{collections::Collections, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Serialize)]
 pub struct GetCollectionOtpParams {
@@ -85,6 +85,7 @@ impl<'a> GetCollectionOtp for Collections<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<GetCollectionOtpResponse>>()
             .await?;
 

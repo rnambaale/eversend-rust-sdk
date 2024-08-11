@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{exchange::{types::Quotation, Exchange}, wallets::WalletId, ApiResponseBody, EversendError, EversendResult};
+use crate::{exchange::{types::Quotation, Exchange}, wallets::WalletId, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Serialize)]
 pub struct CreateQuotationParams<'a> {
@@ -88,6 +88,7 @@ impl<'a> CreateQuotation for Exchange<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<CreateQuotationResponse>>()
             .await?;
 

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use thiserror::Error;
 
-use crate::{accounts::{types::Account, Accounts}, ApiResponseBody, EversendError, EversendResult};
+use crate::{accounts::{types::Account, Accounts}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 /// An error returned from [`GetProfile`].
 #[derive(Debug, Error)]
@@ -57,6 +57,7 @@ impl<'a> GetProfile for Accounts<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<Account>>()
             .await?;
 

@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::Serialize;
 use thiserror::Error;
 
-use crate::{collections::{CollectionFees, Collections}, ApiResponseBody, EversendError, EversendResult};
+use crate::{collections::{CollectionFees, Collections}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 #[derive(Serialize)]
 pub enum CollectionMethod {
@@ -89,6 +89,7 @@ impl<'a> GetCollectionFees for Collections<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<CollectionFees>>()
             .await?;
 

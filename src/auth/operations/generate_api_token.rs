@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::{auth::Auth, core::ApiToken, EversendError, EversendResult};
+use crate::{auth::Auth, core::ApiToken, EversendError, EversendResult, ResponseExtension};
 
 /// An error returned from [`GenerateApiToken`].
 #[derive(Debug, Error)]
@@ -61,6 +61,7 @@ impl<'a> GenerateApiToken for Auth<'a> {
             .header("clientSecret", self.eversend.client_secret().to_string())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiTokenResponse>()
             .await?;
 

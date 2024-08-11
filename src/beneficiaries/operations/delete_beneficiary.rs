@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::{beneficiaries::Beneficiaries, EversendError, EversendResult};
+use crate::{beneficiaries::Beneficiaries, EversendError, EversendResult, ResponseExtension};
 
 /// An error returned from [`DeleteBeneficiary`].
 #[derive(Debug, Error)]
@@ -71,6 +71,7 @@ impl<'a> DeleteBeneficiary for Beneficiaries<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<DeleteBeneficiaryApiResponse>()
             .await?;
 

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use thiserror::Error;
 
-use crate::{payouts::{Bank, Payouts}, ApiResponseBody, EversendError, EversendResult};
+use crate::{payouts::{Bank, Payouts}, ApiResponseBody, EversendError, EversendResult, ResponseExtension};
 
 /// An error returned from [`GetDeliveryBanks`].
 #[derive(Debug, Error)]
@@ -62,6 +62,7 @@ impl<'a> GetDeliveryBanks for Payouts<'a> {
             .bearer_auth(self.eversend.api_token().unwrap())
             .send()
             .await?
+            .handle_unauthorized_or_generic_error()?
             .json::<ApiResponseBody<Vec<Bank>>>()
             .await?;
 
